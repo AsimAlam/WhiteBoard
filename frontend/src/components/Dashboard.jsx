@@ -1,5 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { _getDashboard } from '../api/api';
+import styled from "styled-components";
+
+const DashboardWrapper = styled.div`
+height: 92vh;
+width: 100%;
+display: flex;
+flex-direction: column;
+align-items: center;
+`;
+const DashboardHeader = styled.h1``;
+const DashboardMessage = styled.p``;
 
 const Dashboard = () => {
   const [message, setMessage] = useState("Loading dashboard...");
@@ -20,10 +31,10 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div style={{ textAlign: 'center', marginTop: '100px' }}>
-      <h1>Dashboard</h1>
-      <p>{message}</p>
-    </div>
+    <DashboardWrapper>
+      <DashboardHeader>Dashboard</DashboardHeader>
+      <DashboardMessage>{message}</DashboardMessage>
+    </DashboardWrapper>
   );
 };
 

@@ -5,6 +5,8 @@ export const lightTheme = {
     cardText: "#333333",
     buttonBg: "#007bff",
     buttonText: "#ffffff",
+    navbarBg: "#F5FAFF",
+    logo: "#000000",
 };
 
 export const darkTheme = {
@@ -14,4 +16,6 @@ export const darkTheme = {
     cardText: "#f1f1f1",
     buttonBg: "#ff9800",
     buttonText: "#000000",
+    navbarBg: "#333",
+    logo: "#ffffff",
 };
