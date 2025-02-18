@@ -52,13 +52,11 @@ const ToggleIcon = styled.img`
   }
 `;
 
-/* Avatar Container to position dropdown */
 const AvatarContainer = styled.div`
   position: relative;
   display: flex;
 `;
 
-/* Advanced styling for the avatar */
 const Avatar = styled.div`
   cursor: pointer;
   display: flex;
@@ -135,7 +133,6 @@ const Navbar = () => {
         setShowDropdown((prev) => !prev);
     };
 
-    // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (

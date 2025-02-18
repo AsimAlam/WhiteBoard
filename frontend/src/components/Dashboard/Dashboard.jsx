@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { _getDashboard } from "../../api/api";
 import styled from "styled-components";
-import RecentBoards from '../Boards/RecentBoards';
+import NewBoard from '../Boards/NewBoard';
+import RecentBoard from '../Boards/RecentBoard';
 
 const DashboardWrapper = styled.div`
 height: 90vh;
@@ -29,6 +30,7 @@ height: 95%;
 width: 100%;
 display: flex;
 flex-direction: row;
+flex-wrap: wrap;
 `;
 
 const Dashboard = () => {
@@ -60,7 +62,15 @@ const Dashboard = () => {
         </HeaderItem>
       </DashboardHeader>
       <DashboardBody>
-        <RecentBoards />
+        <NewBoard />
+        <RecentBoard />
+        <RecentBoard />
+        <RecentBoard />
+        <RecentBoard />
+        <RecentBoard />
+        <RecentBoard />
+        <RecentBoard />
+        <RecentBoard />
       </DashboardBody>
     </DashboardWrapper>
   );

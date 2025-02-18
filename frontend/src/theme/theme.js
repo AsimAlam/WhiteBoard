@@ -14,6 +14,7 @@ export const lightTheme = {
     dropdownText: "black",
     highlight: "#3859FF",
     avatarBorder: "#D9D9D9",
+    cardPreview: "#E8ECFC",
 };
 
 export const darkTheme = {
@@ -32,4 +33,5 @@ export const darkTheme = {
     dropdownText: "#FFFFFF",
     highlight: "#F36F41",
     avatarBorder: "#D9D9D9",
+    cardPreview: "#707070",
 };
