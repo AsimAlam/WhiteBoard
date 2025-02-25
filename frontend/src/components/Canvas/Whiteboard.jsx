@@ -1,14 +1,14 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
+import { Canvas, PencilBrush, IText, Rect } from 'fabric';
 import styled, { useTheme } from 'styled-components';
 
 const CanvasWrapper = styled.div`
   position: relative;
   width: 100%;
+  height: 500px;
   margin: 1rem;
   background: ${({ theme }) => theme.canvasBg};
   border-radius: 10px;
-  /* Ensure a minimum height so the canvas is visible */
-  min-height: 400px;
 `;
 
 const StyledCanvas = styled.canvas`
@@ -17,197 +17,310 @@ const StyledCanvas = styled.canvas`
   display: block;
 `;
 
-const Button = styled.button`
-  margin: 5px;
+const SaveButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
   padding: 8px 12px;
   font-size: 14px;
   cursor: pointer;
 `;
 
-const Whiteboard = ({ tool, lineWidth = 2 }) => {
-  const theme = useTheme();
+const UndoButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 120px;
+  z-index: 10;
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+`;
+
+const RedoButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 230px;
+  z-index: 10;
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+`;
+
+const FabricWhiteboard = ({ tool, lineWidth = 2 }) => {
   const canvasRef = useRef(null);
-  const [commands, setCommands] = useState([]); // { tool: 'pen', points: [{x, y}, ...], lineWidth }
+  const fabricCanvasRef = useRef(null);
+  const theme = useTheme();
 
-  const [currentCommand, setCurrentCommand] = useState(null);
-  const [isDrawing, setIsDrawing] = useState(false);
+  // Undo/Redo stacks.
+  const undoStack = useRef([]);
+  const redoStack = useRef([]);
+  const isUndoRedo = useRef(false); // flag to prevent saving state during undo/redo
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (canvas) {
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
-      renderCommands();
-    }
-  }, []);
-
-  useEffect(() => {
-    renderCommands();
-  }, [commands, theme]);
-
-  const getMousePos = (e) => {
-    const canvas = canvasRef.current;
-    const rect = canvas.getBoundingClientRect();
-    return {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-    };
+  // Save the current state of the canvas.
+  const saveState = (canvas) => {
+    if (isUndoRedo.current) return;
+    const state = canvas.toJSON();
+    undoStack.current.push(state);
+    // Clear redo history on new actions.
+    redoStack.current = [];
+    console.log('State saved. Undo stack size:', undoStack.current.length);
   };
 
-  const renderCommands = () => {
-    const canvas = canvasRef.current;
+  // Initialize the canvas once.
+  useEffect(() => {
+    if (!canvasRef.current || fabricCanvasRef.current) return;
+
+    const canvasEl = canvasRef.current;
+    canvasEl.width = canvasEl.clientWidth;
+    canvasEl.height = canvasEl.clientHeight;
+
+    const fabricCanvas = new Canvas(canvasEl, {
+      isDrawingMode: false,
+      backgroundColor: theme.canvasBg,
+    });
+
+    // Set free drawing brush properties.
+    if (fabricCanvas.freeDrawingBrush) {
+      fabricCanvas.freeDrawingBrush.width = lineWidth;
+      fabricCanvas.freeDrawingBrush.color = theme.text;
+    }
+
+    // Save state after a free-draw path is completed.
+    fabricCanvas.on('path:created', () => {
+      saveState(fabricCanvas);
+    });
+    // Also save after modifications or removals.
+    fabricCanvas.on('object:modified', () => saveState(fabricCanvas));
+    fabricCanvas.on('object:removed', () => saveState(fabricCanvas));
+
+    // Save the initial state.
+    undoStack.current.push(fabricCanvas.toJSON());
+
+    fabricCanvasRef.current = fabricCanvas;
+  }, [theme, lineWidth]);
+
+  // Update canvas properties when theme changes.
+  useEffect(() => {
+    const canvas = fabricCanvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    canvas.backgroundColor = theme.canvasBg;
+    if (canvas.freeDrawingBrush && tool !== 'eraser') {
+      canvas.freeDrawingBrush.color = theme.text;
+    }
+    canvas.getObjects().forEach((obj) => {
+      if (obj.stroke) obj.set({ stroke: theme.text });
+      if (obj.type === 'i-text' && obj.fill) obj.set({ fill: theme.text });
+    });
+    canvas.renderAll();
+  }, [theme, tool]);
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // Set up tool-specific behavior.
+  useEffect(() => {
+    const canvas = fabricCanvasRef.current;
+    if (!canvas) return;
 
-    commands.forEach((cmd) => {
-      if (cmd.tool === 'pen') {
-        ctx.beginPath();
-        ctx.strokeStyle = theme.text; // Use current theme text color.
-        ctx.lineWidth = cmd.lineWidth;
-        if (cmd.points.length > 0) {
-          ctx.moveTo(cmd.points[0].x, cmd.points[0].y);
-          for (let i = 1; i < cmd.points.length; i++) {
-            ctx.lineTo(cmd.points[i].x, cmd.points[i].y);
-          }
-          ctx.stroke();
+    // Remove any previous mouse event handlers.
+    canvas.off('mouse:down');
+    canvas.off('mouse:move');
+    canvas.off('mouse:up');
+
+    // Reset default behavior.
+    canvas.isDrawingMode = false;
+    canvas.selection = true;
+    canvas.getObjects().forEach((obj) => (obj.selectable = true));
+
+    if (tool === 'pen') {
+      canvas.isDrawingMode = true;
+      canvas.selection = false;
+      canvas.getObjects().forEach((obj) => (obj.selectable = false));
+      if (!canvas.freeDrawingBrush || canvas.freeDrawingBrush.type === 'eraser') {
+        canvas.freeDrawingBrush = new PencilBrush(canvas);
+        canvas.freeDrawingBrush.type = 'pen';
+      }
+      canvas.freeDrawingBrush.width = lineWidth;
+      canvas.freeDrawingBrush.color = theme.text;
+    } else if (tool === 'eraser') {
+      // Previous eraser behavior: remove the whole object on click.
+      canvas.isDrawingMode = false;
+      canvas.selection = false;
+      canvas.getObjects().forEach((obj) => (obj.selectable = false));
+      canvas.on('mouse:down', (opt) => {
+        const target = canvas.findTarget(opt.e);
+        if (target) {
+          canvas.remove(target);
+          canvas.renderAll();
+          saveState(canvas);
         }
-      } else if (cmd.tool === 'eraser') {
-        ctx.beginPath();
+      });
+    } else if (tool === 'text') {
+      canvas.isDrawingMode = false;
+      canvas.selection = true;
+      canvas.getObjects().forEach((obj) => (obj.selectable = true));
+      canvas.on('mouse:down', (opt) => {
+        if (canvas.findTarget(opt.e)) return;
+        const pointer = canvas.getPointer(opt.e);
+        const text = new IText('Type here', {
+          left: pointer.x,
+          top: pointer.y,
+          fill: theme.text,
+          fontSize: lineWidth * 10,
+        });
+        canvas.add(text);
+        saveState(canvas);
+      });
+    } else if (tool === 'shape') {
+      canvas.isDrawingMode = false;
+      canvas.selection = false;
+      canvas.getObjects().forEach((obj) => (obj.selectable = false));
+      let rect, isDown = false, origX, origY;
+      canvas.on('mouse:down', (opt) => {
+        isDown = true;
+        const pointer = canvas.getPointer(opt.e);
+        origX = pointer.x;
+        origY = pointer.y;
+        rect = new Rect({
+          left: origX,
+          top: origY,
+          width: 0,
+          height: 0,
+          fill: 'transparent',
+          stroke: theme.text,
+          strokeWidth: lineWidth,
+        });
+        canvas.add(rect);
+      });
+      canvas.on('mouse:move', (opt) => {
+        if (!isDown) return;
+        const pointer = canvas.getPointer(opt.e);
+        if (origX > pointer.x) rect.set({ left: pointer.x });
+        if (origY > pointer.y) rect.set({ top: pointer.y });
+        rect.set({
+          width: Math.abs(origX - pointer.x),
+          height: Math.abs(origY - pointer.y)
+        });
+        canvas.renderAll();
+      });
+      canvas.on('mouse:up', () => {
+        isDown = false;
+        saveState(canvas);
+      });
+    } else if (tool === 'select') {
+      canvas.isDrawingMode = false;
+      canvas.selection = true;
+      canvas.getObjects().forEach((obj) => (obj.selectable = true));
+    }
+  }, [tool, lineWidth, theme]);
 
-        ctx.strokeStyle = theme.canvasBg;
-        ctx.lineWidth = cmd.lineWidth;
-        if (cmd.points.length > 0) {
-          ctx.moveTo(cmd.points[0].x, cmd.points[0].y);
-          for (let i = 1; i < cmd.points.length; i++) {
-            ctx.lineTo(cmd.points[i].x, cmd.points[i].y);
-          }
-          ctx.stroke();
-        }
-      } else if (cmd.tool === 'shape') {
-
-        ctx.strokeStyle = theme.text;
-        ctx.lineWidth = cmd.lineWidth;
-        ctx.strokeRect(
-          cmd.start.x,
-          cmd.start.y,
-          cmd.end.x - cmd.start.x,
-          cmd.end.y - cmd.start.y
-        );
-      } else if (cmd.tool === 'text') {
-        ctx.fillStyle = theme.text;
-        ctx.font = `${cmd.fontSize}px Arial`;
-        ctx.fillText(cmd.text, cmd.position.x, cmd.position.y);
+  // Helper function to update canvas background and object styles to the current theme.
+  const updateObjectsToTheme = (canvas) => {
+    // Update background.
+    canvas.backgroundColor = theme.canvasBg;
+    // Update each object's style.
+    canvas.getObjects().forEach((obj) => {
+      if (obj.stroke) {
+        obj.set({ stroke: theme.text });
+      }
+      if (obj.type === 'i-text' && obj.fill) {
+        obj.set({ fill: theme.text });
       }
     });
   };
 
-  const handleMouseDown = (e) => {
-    const pos = getMousePos(e);
-    setIsDrawing(true);
-    if (tool === 'pen' || tool === 'eraser') {
-      setCurrentCommand({ tool, points: [pos], lineWidth });
-    } else if (tool === 'shape') {
-      setCurrentCommand({ tool: 'shape', start: pos, end: pos, lineWidth });
-    }
+  // Undo: load the previous state, update styles, and force re-render.
+  const undo = () => {
+    const canvas = fabricCanvasRef.current;
+    if (!canvas || undoStack.current.length <= 1) return;
+    isUndoRedo.current = true;
+
+    // Pop current state, push it to redo stack.
+    const currentState = undoStack.current.pop();
+    redoStack.current.push(currentState);
+    // Get previous state.
+    const prevState = undoStack.current[undoStack.current.length - 1];
+
+    // Load previous state.
+    canvas.loadFromJSON(prevState, () => {
+      // Use a slight delay to ensure objects are loaded.
+      setTimeout(() => {
+        updateObjectsToTheme(canvas);
+        canvas.calcOffset();
+        canvas.requestRenderAll();
+        isUndoRedo.current = false;
+      }, 50);
+    });
   };
 
-  const handleMouseMove = (e) => {
-    if (!isDrawing) return;
-    const pos = getMousePos(e);
+  // Redo: load the next state, update styles, and force re-render.
+  const redo = () => {
+    const canvas = fabricCanvasRef.current;
+    if (!canvas || redoStack.current.length === 0) return;
+    isUndoRedo.current = true;
 
-    if (tool === 'pen' || tool === 'eraser') {
-      setCurrentCommand((prev) => {
-        const newCommand = { ...prev, points: [...prev.points, pos] };
-        renderCommands();
-        const canvas = canvasRef.current;
-        const ctx = canvas.getContext('2d');
-        ctx.beginPath();
-        if (tool === 'pen') {
-          ctx.strokeStyle = theme.text;
-        } else {
-          ctx.strokeStyle = theme.canvasBg;
-        }
-        ctx.lineWidth = lineWidth;
-        if (newCommand.points.length > 0) {
-          ctx.moveTo(newCommand.points[0].x, newCommand.points[0].y);
-          newCommand.points.forEach((pt) => ctx.lineTo(pt.x, pt.y));
-          ctx.stroke();
-        }
-        return newCommand;
-      });
-    } else if (tool === 'shape') {
-      // For shape, update the end point.
-      setCurrentCommand((prev) => {
-        const newCommand = { ...prev, end: pos };
-        renderCommands();
-        // Draw preview for shape.
-        const canvas = canvasRef.current;
-        const ctx = canvas.getContext('2d');
-        ctx.beginPath();
-        ctx.strokeStyle = theme.text;
-        ctx.lineWidth = lineWidth;
-        ctx.strokeRect(
-          newCommand.start.x,
-          newCommand.start.y,
-          newCommand.end.x - newCommand.start.x,
-          newCommand.end.y - newCommand.start.y
-        );
-        return newCommand;
-      });
-    }
+    const nextState = redoStack.current.pop();
+    undoStack.current.push(nextState);
+    canvas.loadFromJSON(nextState, () => {
+      setTimeout(() => {
+        updateObjectsToTheme(canvas);
+        canvas.calcOffset();
+        canvas.requestRenderAll();
+        isUndoRedo.current = false;
+      }, 50);
+    });
   };
 
-  // Mouse up: finalize the current command.
-  const handleMouseUp = (e) => {
-    if (!isDrawing) return;
-    setIsDrawing(false);
-    if (currentCommand) {
-      // Append the finished command to the commands array.
-      setCommands((prev) => [...prev, currentCommand]);
-      setCurrentCommand(null);
-    }
-  };
 
-  // For text tool, handle click (if not drawing).
-  const handleCanvasClick = (e) => {
-    if (tool === 'text') {
-      const pos = getMousePos(e);
-      const inputText = prompt('Enter text:');
-      if (inputText) {
-        // Create a text command.
-        const textCommand = {
-          tool: 'text',
-          text: inputText,
-          position: pos,
-          fontSize: lineWidth * 10, // example: font size based on lineWidth
-        };
-        setCommands((prev) => [...prev, textCommand]);
-      }
-    }
-  };
+  // // Undo: load the previous state.
+  // const undo = () => {
+  //   const canvas = fabricCanvasRef.current;
+  //   if (!canvas || undoStack.current.length <= 1) return;
+  //   isUndoRedo.current = true;
+  //   const currentState = undoStack.current.pop();
+  //   redoStack.current.push(currentState);
+  //   const prevState = undoStack.current[undoStack.current.length - 1];
+  //   canvas.loadFromJSON(prevState, () => {
+  //     // Force a re-render. Sometimes wrapping in setTimeout helps.
+  //     setTimeout(() => {
+  //       canvas.calcOffset();
+  //       canvas.renderAll();
+  //       isUndoRedo.current = false;
+  //     }, 0);
+  //   });
+  // };
 
-  // --- Undo Functionality (Simple example) ---
-  const handleUndo = () => {
-    setCommands((prev) => prev.slice(0, prev.length - 1));
+  // // Redo: load the next state.
+  // const redo = () => {
+  //   const canvas = fabricCanvasRef.current;
+  //   if (!canvas || redoStack.current.length === 0) return;
+  //   isUndoRedo.current = true;
+  //   const nextState = redoStack.current.pop();
+  //   undoStack.current.push(nextState);
+  //   canvas.loadFromJSON(nextState, () => {
+  //     setTimeout(() => {
+  //       canvas.calcOffset();
+  //       canvas.renderAll();
+  //       isUndoRedo.current = false;
+  //     }, 0);
+  //   });
+  // };
+
+  // For debugging: log the current canvas state.
+  const saveCanvasState = () => {
+    const canvas = fabricCanvasRef.current;
+    if (!canvas) return;
+    const json = canvas.toJSON();
+    console.log('Canvas state:', json);
+    return json;
   };
 
   return (
     <CanvasWrapper>
-      {/* Undo button */}
-      <div style={{ position: 'absolute', top: 10, right: 10, zIndex: 10 }}>
-        <Button onClick={handleUndo}>Undo</Button>
-      </div>
-      <StyledCanvas
-        ref={canvasRef}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onClick={handleCanvasClick}
-      />
+      <RedoButton onClick={redo}>Redo</RedoButton>
+      <UndoButton onClick={undo}>Undo</UndoButton>
+      <SaveButton onClick={saveCanvasState}>Save Canvas</SaveButton>
+      <StyledCanvas ref={canvasRef} />
     </CanvasWrapper>
   );
 };
 
-export default Whiteboard;
+export default FabricWhiteboard;
