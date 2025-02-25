@@ -1,6 +1,9 @@
 import styled from "styled-components";
-import React from "react";
+import React, { useEffect } from "react";
 import { ReactComponent as AddIcon } from "../../assets/addIcon.svg";
+import { useUser } from "../../ContextProvider/UserProvider";
+import { useNavigate } from "react-router-dom";
+import { _createNewBoard } from "../../api/api";
 
 const AddBoardsWrapper = styled.div`
     width: 15rem;
@@ -70,9 +73,29 @@ const AddText = styled.div`
 
 
 const NewBoard = () => {
+
+    const { user } = useUser();
+    const navigate = useNavigate();
+
+    const handleNewCanvas = async () => {
+
+        try {
+            const response = await _createNewBoard(user._id, "New Board");
+            const data = await response.json();
+            console.log("data", data);
+            const { _id, sessionToken } = data;
+            // Construct the unique URL for the new whiteboard
+            const boardUrl = `/whiteboard/${_id}?token=${sessionToken}`;
+            // Navigate to the new whiteboard page
+            navigate(boardUrl);
+        } catch (error) {
+            console.error("Error creating new board:", error);
+        }
+    }
+
     return (
         <AddBoardsWrapper>
-            <AddBox>
+            <AddBox onClick={handleNewCanvas}>
                 <IconWrapper />
             </AddBox>
             <AddText>Create new board</AddText>

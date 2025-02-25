@@ -15,7 +15,7 @@ router.get("/google/callback",
 // Protected Route
 router.get("/dashboard", (req, res) => {
     if (req.isAuthenticated()) {
-        res.json({ message: `Hello ${req.user.name}, welcome to your dashboard.` });
+        res.json({ data: req.user });
     } else {
         res.status(401).json({ message: "Unauthorized" });
     }

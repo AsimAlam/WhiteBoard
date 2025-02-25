@@ -3,6 +3,8 @@ import { _getDashboard } from "../../api/api";
 import styled from "styled-components";
 import NewBoard from '../Boards/NewBoard';
 import RecentBoard from '../Boards/RecentBoard';
+import { useUser } from '../../ContextProvider/UserProvider';
+import { useNavigate } from 'react-router-dom';
 
 const DashboardWrapper = styled.div`
 height: 90vh;
@@ -34,16 +36,19 @@ flex-wrap: wrap;
 `;
 
 const Dashboard = () => {
-  const [message, setMessage] = useState("Loading dashboard...");
+  const { setUser } = useUser();
+
+  const navigate = useNavigate();
 
   const fetchDashboardData = async () => {
     const response = await _getDashboard();
     console.log("response", response);
     if (response.ok) {
       const data = await response.json();
-      setMessage(data.message);
+      console.log("data", data);
+      setUser(data?.data);
     } else {
-      setMessage('Failed to load dashboard');
+      navigate("/login");
     }
   };
 

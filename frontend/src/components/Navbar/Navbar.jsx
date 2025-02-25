@@ -6,6 +6,7 @@ import AvatarImage from "../../assets/avatars/below-25-boy.svg";
 import { useTheme } from "../../ContextProvider/ThemeProvider";
 import { ReactComponent as LogoImage } from "../../assets/logo.svg";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../../ContextProvider/UserProvider";
 
 const NavbarWrapper = styled.div`
   height: 10vh;
@@ -124,67 +125,68 @@ const DropdownItem = styled.div`
 `;
 
 const Navbar = () => {
-    const { theme, toggleTheme } = useTheme();
-    const [showDropdown, setShowDropdown] = useState(false);
-    const dropdownRef = useRef(null);
-    const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
+  const navigate = useNavigate();
+  const { user } = useUser();
 
-    const handleAvatarClick = () => {
-        setShowDropdown((prev) => !prev);
+  const handleAvatarClick = () => {
+    setShowDropdown((prev) => !prev);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target)
+      ) {
+        setShowDropdown(false);
+      }
     };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () =>
+      document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (
-                dropdownRef.current &&
-                !dropdownRef.current.contains(event.target)
-            ) {
-                setShowDropdown(false);
-            }
-        };
-        document.addEventListener("mousedown", handleClickOutside);
-        return () =>
-            document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
-
-    return (
-        <NavbarWrapper>
-            <Logo>
-                <StyledLogo />
-            </Logo>
-            <NavItems>
-                <ToggleButton onClick={toggleTheme}>
-                    <ToggleIcon
-                        src={theme === "light" ? DarkModeToggle : LightModeToggle}
-                        alt="Toggle"
-                    />
-                </ToggleButton>
-                <AvatarContainer>
-                    <Avatar onClick={handleAvatarClick}>
-                        <AvatarImg src={AvatarImage} alt="Avatar" />
-                    </Avatar>
-                    {showDropdown && (
-                        <DropdownContainer ref={dropdownRef}>
-                            <DropdownItem onClick={() => navigate("/dashboard")}>
-                                Dashboard
-                            </DropdownItem>
-                            <DropdownItem onClick={() => navigate("/settings")}>
-                                Settings
-                            </DropdownItem>
-                            <DropdownItem
-                                onClick={() => {
-                                    // Implement your logout logic here
-                                    navigate("/login");
-                                }}
-                            >
-                                Logout
-                            </DropdownItem>
-                        </DropdownContainer>
-                    )}
-                </AvatarContainer>
-            </NavItems>
-        </NavbarWrapper>
-    );
+  return (
+    <NavbarWrapper>
+      <Logo>
+        <StyledLogo />
+      </Logo>
+      <NavItems>
+        <ToggleButton onClick={toggleTheme}>
+          <ToggleIcon
+            src={theme === "light" ? DarkModeToggle : LightModeToggle}
+            alt="Toggle"
+          />
+        </ToggleButton>
+        <AvatarContainer>
+          <Avatar onClick={handleAvatarClick}>
+            <AvatarImg src={user.profilePic} alt="Avatar" />
+          </Avatar>
+          {showDropdown && (
+            <DropdownContainer ref={dropdownRef}>
+              <DropdownItem onClick={() => navigate("/dashboard")}>
+                Dashboard
+              </DropdownItem>
+              <DropdownItem onClick={() => navigate("/settings")}>
+                Settings
+              </DropdownItem>
+              <DropdownItem
+                onClick={() => {
+                  // Implement your logout logic here
+                  navigate("/login");
+                }}
+              >
+                Logout
+              </DropdownItem>
+            </DropdownContainer>
+          )}
+        </AvatarContainer>
+      </NavItems>
+    </NavbarWrapper>
+  );
 };
 
 export default Navbar;
