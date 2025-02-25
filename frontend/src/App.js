@@ -4,21 +4,27 @@ import Login from "./components/Login/Login";
 import Dashboard from "./components/Dashboard/Dashboard";
 import Layout from "./Layout/Layout";
 import ViewBoard from "./components/ViewBoard/ViewBoard";
+import { UserProvider } from "./ContextProvider/UserProvider";
+import Canvas from "./components/Canvas/Canvas";
+import CanvasContainer from "./components/Canvas/CanvasContainer";
 
 function App() {
   return (
-    <ThemeProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route path="/login" element={<Login />} />
-          <Route element={<Layout />}>
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/view" element={<ViewBoard />} />
-          </Route>
-        </Routes>
-      </Router>
-    </ThemeProvider>
+    <UserProvider>
+      <ThemeProvider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<Navigate to="/login" replace />} />
+            <Route path="/login" element={<Login />} />
+            <Route element={<Layout />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/view" element={<ViewBoard />} />
+              <Route path="/whiteboard/:boardId" element={<CanvasContainer />} />
+            </Route>
+          </Routes>
+        </Router>
+      </ThemeProvider>
+    </UserProvider>
   );
 }
 

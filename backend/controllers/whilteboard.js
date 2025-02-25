@@ -1,16 +1,24 @@
 const express = require("express");
 const Whiteboard = require("../models/Whiteboard");
 const Drawing = require("../models/Drawing");
-const validateSessionToken = require("../middlewares/validateSessionToken");
+const validateSessionToken = require("../middleware/validateSessionToken");
+const checkRole = require("../middleware/checkRole");
+const { v4: uuidv4 } = require("uuid");
 
 const router = express.Router();
 
 // Create a new whiteboard
 router.post("/create", async (req, res) => {
-    const { name, ownerId } = req.body;
-    const whiteboard = new Whiteboard({ name, ownerId });
-    await whiteboard.save();
-    res.json(whiteboard);
+    try {
+        const sessionToken = uuidv4();
+        const { name, ownerId } = req.body;
+        const whiteboard = new Whiteboard({ name, ownerId, sessionToken });
+        await whiteboard.save();
+        res.json(whiteboard);
+    } catch (error) {
+        res.status(500).json({ message: "Error creating whiteboard" });
+    }
+
 });
 
 // Save a drawing
