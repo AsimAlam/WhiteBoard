@@ -82,6 +82,10 @@ const Canvas = (props) => {
             <ToggleButton onClick={toggleToolbar} collapsed={toolbarCollapsed}>
                 {toolbarCollapsed ? '>>' : '<<'}
             </ToggleButton>
+            <ToolbarItem collapsed={toolbarCollapsed} onClick={() => handleSelectTool('select')}>
+                <Icon collapsed={toolbarCollapsed}>✏️</Icon>
+                <ItemLabel collapsed={toolbarCollapsed}>Select</ItemLabel>
+            </ToolbarItem>
             <ToolbarItem collapsed={toolbarCollapsed} onClick={() => handleSelectTool('pen')}>
                 <Icon collapsed={toolbarCollapsed}>✏️</Icon>
                 <ItemLabel collapsed={toolbarCollapsed}>Pen</ItemLabel>
