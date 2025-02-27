@@ -20,14 +20,21 @@ mongoose.connect(process.env.MONGO_URI, {
     .catch(err => console.error(err));
 
 io.on("connection", (socket) => {
-    console.log("🟢 A user connected:", socket.id);
+    console.log("A user connected:", socket.id);
 
-    socket.on("draw", (data) => {
-        socket.broadcast.emit("draw", data); // Send updates to others
+    socket.on("join-board", (boardId) => {
+        socket.join(boardId);
+        console.log(`Socket ${socket.id} joined board ${boardId}`);
+    });
+
+    socket.on("canvas-update", (data) => {
+        // Broadcast update to all other users in the same board.
+        socket.to(data.boardId).emit("canvas-update", data);
+        // Optionally, persist data.canvas to the database.
     });
 
     socket.on("disconnect", () => {
-        console.log("🔴 A user disconnected:", socket.id);
+        console.log("User disconnected:", socket.id);
     });
 });
 

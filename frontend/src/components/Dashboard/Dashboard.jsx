@@ -4,7 +4,7 @@ import styled from "styled-components";
 import NewBoard from '../Boards/NewBoard';
 import RecentBoard from '../Boards/RecentBoard';
 import { useUser } from '../../ContextProvider/UserProvider';
-import { useNavigate } from 'react-router-dom';
+import { redirect, useNavigate } from 'react-router-dom';
 
 const DashboardWrapper = styled.div`
 height: 90vh;
@@ -46,7 +46,11 @@ const Dashboard = () => {
     if (response.ok) {
       const data = await response.json();
       console.log("data", data);
+      console.log("uri", encodeURIComponent(window.location.href), window.location.href);
       setUser(data?.data);
+      if (data?.data && !window.location.href.includes("/dashboard")) {
+        navigate(`${encodeURIComponent(window.location.href)}`);
+      }
     } else {
       navigate("/login");
     }
