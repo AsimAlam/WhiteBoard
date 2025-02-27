@@ -3,12 +3,27 @@ const passport = require("passport");
 const router = express.Router();
 
 // Google OAuth Routes
-router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
+router.get("/google", (req, res, next) => {
+    const redirectUrl = req.query.redirect || "/dashboard";
+    console.log("inside google api", redirectUrl);
+    passport.authenticate("google", {
+        scope: ["profile", "email"],
+        state: redirectUrl
+    })(req, res, next);
+});
 
-router.get("/google/callback",
+router.get(
+    "/google/callback",
     passport.authenticate("google", { failureRedirect: "http://localhost:3000/login" }),
     (req, res) => {
-        res.redirect("http://localhost:3000/dashboard");
+        // Retrieve the redirect URL from the state parameter.
+        // const redirectTo = req.query.state || "/dashboard";
+
+        const redirectTo = req.query.state ? decodeURIComponent(req.query.state) : "/dashboard";
+        console.log("inside callback", redirectTo);
+        res.redirect(redirectTo);
+
+        // res.redirect(`${redirectTo}`);
     }
 );
 
@@ -24,7 +39,8 @@ router.get("/dashboard", (req, res) => {
 
 // Login Route
 router.get("/login", (req, res) => {
-    res.send("Please login via <a href='/auth/google'>Google</a>");
+    const redirect = req.query.redirect ? `?redirect=${encodeURIComponent(req.query.redirect)}` : "";
+    res.send(`Please login via <a href="/auth/google${redirect}">Google</a>`);
 });
 
 // Logout Route (Fixed)

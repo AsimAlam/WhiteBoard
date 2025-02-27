@@ -1,6 +1,9 @@
 import styled from "styled-components";
 import { ReactComponent as LogoImage } from "../../assets/logo.svg";
 import { _loginWithGoogle } from "../../api/api";
+import { useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useUser } from "../../ContextProvider/UserProvider";
 
 const LoginSpace = styled.div`
     height: 100vh;
@@ -96,8 +99,21 @@ const LoginButton = styled.button`
 
 const Login = () => {
 
-    const handleGoogleLogin = () => {
-        _loginWithGoogle();
+    const navigate = useNavigate();
+    const location = useLocation();
+    const { user } = useUser();
+
+    useEffect(() => {
+        if (user && Object.keys(user).length !== 0) {
+            const query = new URLSearchParams(location.search);
+            const redirectUrl = query.get("redirect") || "/dashboard";
+            navigate(redirectUrl);
+        }
+    }, [user, location, navigate]);
+
+    const handleGoogleLogin = async () => {
+        const response = await _loginWithGoogle();
+        console.log("response", response.json());
     };
 
     return (

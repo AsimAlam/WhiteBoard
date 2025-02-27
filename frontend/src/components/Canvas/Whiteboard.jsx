@@ -1,6 +1,10 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Canvas, PencilBrush, IText, Rect } from 'fabric';
+import io from "socket.io-client";
 import styled, { useTheme } from 'styled-components';
+import { useParams, useLocation, useNavigate } from "react-router-dom";
+import { useUser } from "../../ContextProvider/UserProvider"
+import { _getDashboard } from '../../api/api';
 
 const CanvasWrapper = styled.div`
   position: relative;
@@ -47,7 +51,7 @@ const RedoButton = styled.button`
   cursor: pointer;
 `;
 
-const FabricWhiteboard = ({ tool, lineWidth = 2 }) => {
+const Whiteboard = ({ tool, lineWidth = 2 }) => {
   const canvasRef = useRef(null);
   const fabricCanvasRef = useRef(null);
   const theme = useTheme();
@@ -55,7 +59,65 @@ const FabricWhiteboard = ({ tool, lineWidth = 2 }) => {
   // Undo/Redo stacks.
   const undoStack = useRef([]);
   const redoStack = useRef([]);
-  const isUndoRedo = useRef(false); // flag to prevent saving state during undo/redo
+  const isUndoRedo = useRef(false);
+
+  const { id } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { user } = useUser();
+  const [canvasData, setCanvasData] = useState(null);
+  const socketRef = useRef(null);
+
+  const query = new URLSearchParams(location.search);
+  const sessionToken = query.get("token");
+
+  const { setUser } = useUser();
+
+  const getUser = async () => {
+    const response = await _getDashboard();
+    const data = await response?.json();
+    console.log("data", data);
+    if (data.message === 'Unauthorized') {
+      navigate(`/login?redirect=${encodeURIComponent(window.location.href)}`);
+    } else {
+      setUser(data?.data);
+    }
+  }
+
+  useEffect(() => {
+    console.log("inside user navigate", user);
+    if (!user || Object.keys(user).length === 0) {
+      console.log("not user");
+
+      getUser();
+
+      if (!user || Object.keys(user).length === 0) {
+        // navigate(`/login?redirect=${encodeURIComponent(window.location.href)}`);
+      }
+    }
+  }, [user, navigate]);
+
+  // Fetch whiteboard data from backend.
+  useEffect(() => {
+    const fetchWhiteboard = async () => {
+      try {
+        const response = await fetch(`/api/whiteboard/${id}?token=${sessionToken}`, {
+          headers: { Authorization: user.token },
+        });
+        if (response.status === 401 || response.status === 403) {
+          navigate("/login");
+          return;
+        }
+        const data = await response.json();
+        // Assume canvas data is stored in pages[0].canvasData.
+        setCanvasData(data.pages[0].canvasData);
+      } catch (error) {
+        console.error("Error fetching whiteboard:", error);
+      }
+    };
+
+    if (user) fetchWhiteboard();
+  }, [id, sessionToken, user, navigate]);
 
   // Save the current state of the canvas.
   const saveState = (canvas) => {
@@ -69,6 +131,8 @@ const FabricWhiteboard = ({ tool, lineWidth = 2 }) => {
 
   // Initialize the canvas once.
   useEffect(() => {
+
+
     if (!canvasRef.current || fabricCanvasRef.current) return;
 
     const canvasEl = canvasRef.current;
@@ -76,29 +140,80 @@ const FabricWhiteboard = ({ tool, lineWidth = 2 }) => {
     canvasEl.height = canvasEl.clientHeight;
 
     const fabricCanvas = new Canvas(canvasEl, {
-      isDrawingMode: false,
+      // isDrawingMode: false,
       backgroundColor: theme.canvasBg,
     });
 
-    // Set free drawing brush properties.
-    if (fabricCanvas.freeDrawingBrush) {
-      fabricCanvas.freeDrawingBrush.width = lineWidth;
-      fabricCanvas.freeDrawingBrush.color = theme.text;
-    }
-
-    // Save state after a free-draw path is completed.
-    fabricCanvas.on('path:created', () => {
-      saveState(fabricCanvas);
-    });
-    // Also save after modifications or removals.
-    fabricCanvas.on('object:modified', () => saveState(fabricCanvas));
-    fabricCanvas.on('object:removed', () => saveState(fabricCanvas));
-
-    // Save the initial state.
-    undoStack.current.push(fabricCanvas.toJSON());
-
     fabricCanvasRef.current = fabricCanvas;
-  }, [theme, lineWidth]);
+
+    // Load saved canvas state if available.
+    if (canvasData) {
+      fabricCanvas.loadFromJSON(canvasData, () => {
+        fabricCanvas.renderAll();
+      });
+    }
+    return () => {
+      fabricCanvas.dispose();
+      fabricCanvasRef.current = null;
+    };
+
+    // Set free drawing brush properties.
+    // if (fabricCanvas.freeDrawingBrush) {
+    //   fabricCanvas.freeDrawingBrush.width = lineWidth;
+    //   fabricCanvas.freeDrawingBrush.color = theme.text;
+    // }
+
+    // // Save state after a free-draw path is completed.
+    // fabricCanvas.on('path:created', () => {
+    //   saveState(fabricCanvas);
+    // });
+    // // Also save after modifications or removals.
+    // fabricCanvas.on('object:modified', () => saveState(fabricCanvas));
+    // fabricCanvas.on('object:removed', () => saveState(fabricCanvas));
+
+    // // Save the initial state.
+    // undoStack.current.push(fabricCanvas.toJSON());
+
+    // fabricCanvasRef.current = fabricCanvas;
+  }, [theme, canvasData, lineWidth]);
+
+  // Setup Socket.io for real-time collaboration.
+  useEffect(() => {
+    socketRef.current = io("http://localhost:5000");
+    socketRef.current.emit("join-board", id);
+
+    socketRef.current.on("canvas-update", (data) => {
+      if (data.boardId !== id) return;
+      const canvas = fabricCanvasRef.current;
+      if (canvas) {
+        canvas.loadFromJSON(data.canvas, () => {
+          canvas.renderAll();
+        });
+      }
+    });
+
+    return () => {
+      socketRef.current.disconnect();
+    };
+  }, [id]);
+
+  // When canvas changes (e.g., on object modification), emit updates.
+  useEffect(() => {
+    const fabricCanvas = fabricCanvasRef.current;
+    if (!fabricCanvas) return;
+    const handleUpdate = () => {
+      const json = fabricCanvas.toJSON();
+      socketRef.current.emit("canvas-update", { boardId: id, canvas: json });
+    };
+
+    fabricCanvas.on("object:modified", handleUpdate);
+    fabricCanvas.on("object:added", handleUpdate);
+
+    return () => {
+      fabricCanvas.off("object:modified", handleUpdate);
+      fabricCanvas.off("object:added", handleUpdate);
+    };
+  }, [id]);
 
   // Update canvas properties when theme changes.
   useEffect(() => {
@@ -269,41 +384,6 @@ const FabricWhiteboard = ({ tool, lineWidth = 2 }) => {
     });
   };
 
-
-  // // Undo: load the previous state.
-  // const undo = () => {
-  //   const canvas = fabricCanvasRef.current;
-  //   if (!canvas || undoStack.current.length <= 1) return;
-  //   isUndoRedo.current = true;
-  //   const currentState = undoStack.current.pop();
-  //   redoStack.current.push(currentState);
-  //   const prevState = undoStack.current[undoStack.current.length - 1];
-  //   canvas.loadFromJSON(prevState, () => {
-  //     // Force a re-render. Sometimes wrapping in setTimeout helps.
-  //     setTimeout(() => {
-  //       canvas.calcOffset();
-  //       canvas.renderAll();
-  //       isUndoRedo.current = false;
-  //     }, 0);
-  //   });
-  // };
-
-  // // Redo: load the next state.
-  // const redo = () => {
-  //   const canvas = fabricCanvasRef.current;
-  //   if (!canvas || redoStack.current.length === 0) return;
-  //   isUndoRedo.current = true;
-  //   const nextState = redoStack.current.pop();
-  //   undoStack.current.push(nextState);
-  //   canvas.loadFromJSON(nextState, () => {
-  //     setTimeout(() => {
-  //       canvas.calcOffset();
-  //       canvas.renderAll();
-  //       isUndoRedo.current = false;
-  //     }, 0);
-  //   });
-  // };
-
   // For debugging: log the current canvas state.
   const saveCanvasState = () => {
     const canvas = fabricCanvasRef.current;
@@ -323,4 +403,4 @@ const FabricWhiteboard = ({ tool, lineWidth = 2 }) => {
   );
 };
 
-export default FabricWhiteboard;
+export default Whiteboard;
