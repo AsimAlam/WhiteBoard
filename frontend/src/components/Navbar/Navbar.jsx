@@ -129,7 +129,7 @@ const Navbar = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
-  const { user } = useUser();
+  const { user, setUser } = useUser();
 
   const handleAvatarClick = () => {
     setShowDropdown((prev) => !prev);
@@ -148,6 +148,11 @@ const Navbar = () => {
     return () =>
       document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const handleLogout = () => {
+    setUser({});
+    navigate("/login");
+  }
 
   return (
     <NavbarWrapper>
@@ -174,10 +179,7 @@ const Navbar = () => {
                 Settings
               </DropdownItem>
               <DropdownItem
-                onClick={() => {
-                  // Implement your logout logic here
-                  navigate("/login");
-                }}
+                onClick={handleLogout}
               >
                 Logout
               </DropdownItem>

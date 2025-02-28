@@ -44,7 +44,7 @@ const Dashboard = () => {
     const response = await _getDashboard();
     console.log("response", response);
     if (response.ok) {
-      const data = await response.json();
+      const data = await response?.json();
       console.log("data", data);
       console.log("uri", encodeURIComponent(window.location.href), window.location.href);
       setUser(data?.data);

@@ -76,7 +76,7 @@ const Whiteboard = ({ tool, lineWidth = 2 }) => {
   const getUser = async () => {
     const response = await _getDashboard();
     const data = await response?.json();
-    console.log("data", data);
+    console.log("data", response);
     if (data.message === 'Unauthorized') {
       navigate(`/login?redirect=${encodeURIComponent(window.location.href)}`);
     } else {
@@ -131,51 +131,31 @@ const Whiteboard = ({ tool, lineWidth = 2 }) => {
 
   // Initialize the canvas once.
   useEffect(() => {
-
-
     if (!canvasRef.current || fabricCanvasRef.current) return;
-
     const canvasEl = canvasRef.current;
     canvasEl.width = canvasEl.clientWidth;
     canvasEl.height = canvasEl.clientHeight;
-
     const fabricCanvas = new Canvas(canvasEl, {
-      // isDrawingMode: false,
-      backgroundColor: theme.canvasBg,
+      backgroundColor: theme.canvasBg, // initial theme
     });
-
     fabricCanvasRef.current = fabricCanvas;
 
-    // Load saved canvas state if available.
     if (canvasData) {
       fabricCanvas.loadFromJSON(canvasData, () => {
+        updateObjectsToTheme(fabricCanvas); // ensure loaded objects reflect the current theme
         fabricCanvas.renderAll();
       });
     }
+
+    // Save the initial state.
+    undoStack.current.push(fabricCanvas.toJSON());
+
     return () => {
       fabricCanvas.dispose();
       fabricCanvasRef.current = null;
     };
+  }, [canvasData, lineWidth]); // removed `theme` from here
 
-    // Set free drawing brush properties.
-    // if (fabricCanvas.freeDrawingBrush) {
-    //   fabricCanvas.freeDrawingBrush.width = lineWidth;
-    //   fabricCanvas.freeDrawingBrush.color = theme.text;
-    // }
-
-    // // Save state after a free-draw path is completed.
-    // fabricCanvas.on('path:created', () => {
-    //   saveState(fabricCanvas);
-    // });
-    // // Also save after modifications or removals.
-    // fabricCanvas.on('object:modified', () => saveState(fabricCanvas));
-    // fabricCanvas.on('object:removed', () => saveState(fabricCanvas));
-
-    // // Save the initial state.
-    // undoStack.current.push(fabricCanvas.toJSON());
-
-    // fabricCanvasRef.current = fabricCanvas;
-  }, [theme, canvasData, lineWidth]);
 
   // Setup Socket.io for real-time collaboration.
   useEffect(() => {
@@ -216,19 +196,35 @@ const Whiteboard = ({ tool, lineWidth = 2 }) => {
   }, [id]);
 
   // Update canvas properties when theme changes.
+  // useEffect(() => {
+  //   const canvas = fabricCanvasRef.current;
+  //   if (!canvas) return;
+  //   canvas.backgroundColor = theme.canvasBg;
+  //   if (canvas.freeDrawingBrush && tool !== 'eraser') {
+  //     canvas.freeDrawingBrush.color = theme.text;
+  //   }
+  //   canvas.getObjects().forEach((obj) => {
+  //     if (obj.stroke) obj.set({ stroke: theme.text });
+  //     if (obj.type === 'i-text' && obj.fill) obj.set({ fill: theme.text });
+  //   });
+  //   canvas.renderAll();
+  // }, [theme, tool]);
+
   useEffect(() => {
     const canvas = fabricCanvasRef.current;
     if (!canvas) return;
+    // Update the canvas background.
     canvas.backgroundColor = theme.canvasBg;
-    if (canvas.freeDrawingBrush && tool !== 'eraser') {
-      canvas.freeDrawingBrush.color = theme.text;
-    }
+
+    // Iterate over each object to update its style.
     canvas.getObjects().forEach((obj) => {
       if (obj.stroke) obj.set({ stroke: theme.text });
       if (obj.type === 'i-text' && obj.fill) obj.set({ fill: theme.text });
     });
+
     canvas.renderAll();
   }, [theme, tool]);
+
 
   // Set up tool-specific behavior.
   useEffect(() => {
@@ -255,6 +251,11 @@ const Whiteboard = ({ tool, lineWidth = 2 }) => {
       }
       canvas.freeDrawingBrush.width = lineWidth;
       canvas.freeDrawingBrush.color = theme.text;
+
+      // Save state after each free drawing path is created.
+      canvas.on('path:created', () => {
+        saveState(canvas);
+      });
     } else if (tool === 'eraser') {
       // Previous eraser behavior: remove the whole object on click.
       canvas.isDrawingMode = false;
