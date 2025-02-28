@@ -107,13 +107,13 @@ const Login = () => {
         if (user && Object.keys(user).length !== 0) {
             const query = new URLSearchParams(location.search);
             const redirectUrl = query.get("redirect") || "/dashboard";
+            console.log("login redirect", redirectUrl);
             navigate(redirectUrl);
         }
     }, [user, location, navigate]);
 
     const handleGoogleLogin = async () => {
-        const response = await _loginWithGoogle();
-        console.log("response", response.json());
+        await _loginWithGoogle();
     };
 
     return (
