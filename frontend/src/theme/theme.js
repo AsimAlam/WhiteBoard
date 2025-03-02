@@ -16,8 +16,8 @@ export const lightTheme = {
     avatarBorder: "#D9D9D9",
     cardPreview: "#E8ECFC",
     canvasBg: "#F1F2F5",
-    toolbar : "#E8F9FF",
-    toolbarHover : "#C4D9FF"
+    toolbar: "#E8F9FF",
+    toolbarHover: "#C4D9FF"
 };
 
 export const darkTheme = {
@@ -37,7 +37,8 @@ export const darkTheme = {
     highlight: "#F36F41",
     avatarBorder: "#D9D9D9",
     cardPreview: "#707070",
-    canvasBg: "#0D0C0E",
-    toolbar : "#0D0C0F",
-    toolbarHover : "#141317",
+    canvasBg: "#222",
+    toolbar: "#0D0C0F",
+    toolbarHover: "#141317",
+
 };
