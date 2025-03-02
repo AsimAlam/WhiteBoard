@@ -26,6 +26,30 @@ export const _createNewBoard = async (userId, boardName) => {
     return response;
 }
 
-export const _loginWithGoogle = async () => {
+export const _loginWithGoogle = async (boardId, token, userId, canvasJSON) => {
     window.location.href = `${config.BACKEND_URL}${config.GOOGLE_AUTH_URL}`;
 };
+
+export const _saveCanvasToDB = async (whiteboardId, canvasJSON, userId, token) => {
+    try {
+        const response = await fetch(
+            `${config.BACKEND_URL}${config.SAVE_DRAWING(whiteboardId)}?token=${token}`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: userId
+                },
+                body: JSON.stringify({ canvas: canvasJSON })
+            }
+        );
+
+        const result = await response.json();
+        console.log("Save response:", result);
+        return result;
+    } catch (error) {
+        console.error("Error saving canvas:", error);
+        return { error: "Error saving canvas" };
+    }
+};
+

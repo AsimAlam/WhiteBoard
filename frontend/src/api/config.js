@@ -10,6 +10,8 @@ const config = {
     GOOGLE_AUTH_URL: `/auth/google?redirect=${encodeURIComponent(redirectParam)}`,
     DASHBOARD_URL: "/auth/dashboard",
     CREATE_BOARD_URL: "/whiteboard/create",
+    SAVE_DRAWING: (whiteboardId) => `/whiteboard/${whiteboardId}/save-drawing`,
+    GET_DRAWING: "/whiteboard/:id",
 };
 
 export default config;

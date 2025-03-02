@@ -4,7 +4,7 @@ import io from "socket.io-client";
 import styled, { useTheme } from 'styled-components';
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { useUser } from "../../ContextProvider/UserProvider";
-import { _getDashboard } from '../../api/api';
+import { _getDashboard, _saveCanvasToDB } from '../../api/api';
 
 const CanvasWrapper = styled.div`
   position: relative;
@@ -372,11 +372,16 @@ const Whiteboard = ({ tool, penColor, lineWidth = 2 }) => {
     });
   };
 
-  const saveCanvasState = () => {
+  const saveCanvasState = async () => {
     const canvas = fabricCanvasRef.current;
     if (!canvas) return;
     const json = canvas.toJSON();
     console.log('Canvas state:', json);
+
+    const response = await _saveCanvasToDB(id, json, user._id, sessionToken);
+
+    console.log("save response", response);
+
     return json;
   };
 

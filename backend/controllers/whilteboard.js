@@ -23,12 +23,28 @@ router.post("/create", async (req, res) => {
 });
 
 // Save a drawing
-router.post("/:whiteboardId/save-drawing", checkRole("write"), async (req, res) => {
-  const { whiteboardId, data } = req.body;
+router.put("/:id/save-drawing", authMiddleware, async (req, res) => {
+  const { id } = req.params;
+  const { token } = req.query;
+  const { canvas } = req.body;
+
+  console.log(id, token, canvas);
+
   try {
-    const drawing = new Drawing({ whiteboardId, data });
-    await drawing.save();
-    res.json({ message: "Drawing saved successfully", drawing });
+
+    const whiteboard = await Whiteboard.findById(id);
+    if (!whiteboard) return res.status(404).json({ message: "Whiteboard not found" });
+    if (whiteboard.sessionToken !== token) {
+      return res.status(403).json({ message: "Invalid session token" });
+    }
+
+    if (whiteboard.pages && whiteboard.pages.length > 0) {
+      whiteboard.pages[0].canvasData = canvas;
+    } else {
+      whiteboard.pages = [{ pageNumber: 1, canvasData: canvas }];
+    }
+    await whiteboard.save();
+    res.json({ message: "Whiteboard updated successfully" });
   } catch (error) {
     res.status(500).json({ message: "Error saving drawing" });
   }
@@ -65,10 +81,10 @@ router.get("/:id", authMiddleware, async (req, res) => {
       return res.status(403).json({ message: "Invalid session token" });
     }
     // Optionally add the user as a collaborator if not present.
-    if (!whiteboard.collaborators.some(c => c.userId.equals(req.user._id))) {
-      whiteboard.collaborators.push({ userId: req.user._id, role: "write" });
-      await whiteboard.save();
-    }
+    // if (!whiteboard.collaborators.some(c => c.userId.equals(req.user._id))) {
+    //   whiteboard.collaborators.push({ userId: req.user._id, role: "write" });
+    //   await whiteboard.save();
+    // }
     res.json(whiteboard);
   } catch (err) {
     res.status(500).json({ message: "Server error" });
