@@ -73,13 +73,9 @@ router.post("/generate-session-link", async (req, res) => {
 // Get drawings of a whiteboard
 router.get("/:id", authMiddleware, async (req, res) => {
   const { id } = req.params;
-  const { token } = req.query; // session token from URL
   try {
     const whiteboard = await Whiteboard.findById(id);
     if (!whiteboard) return res.status(404).json({ message: "Whiteboard not found" });
-    if (whiteboard.sessionToken !== token) {
-      return res.status(403).json({ message: "Invalid session token" });
-    }
     // Optionally add the user as a collaborator if not present.
     // if (!whiteboard.collaborators.some(c => c.userId.equals(req.user._id))) {
     //   whiteboard.collaborators.push({ userId: req.user._id, role: "write" });

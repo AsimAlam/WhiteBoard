@@ -53,3 +53,24 @@ export const _saveCanvasToDB = async (whiteboardId, canvasJSON, userId, token) =
     }
 };
 
+export const _getWhiteboard = async (whiteboardId, userId) => {
+
+    try {
+        const response = await fetch(`${config.BACKEND_URL}${config.GET_DRAWING(whiteboardId)}`, {
+            method: 'GET',
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: userId
+            },
+        });
+
+        console.log("getting response", response);
+
+        return response;
+    } catch (error) {
+        return error;
+    }
+
+
+}
+

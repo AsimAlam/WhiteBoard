@@ -11,7 +11,7 @@ const config = {
     DASHBOARD_URL: "/auth/dashboard",
     CREATE_BOARD_URL: "/whiteboard/create",
     SAVE_DRAWING: (whiteboardId) => `/whiteboard/${whiteboardId}/save-drawing`,
-    GET_DRAWING: "/whiteboard/:id",
+    GET_DRAWING: (whiteboardId) => `/whiteboard/${whiteboardId}`,
 };
 
 export default config;
