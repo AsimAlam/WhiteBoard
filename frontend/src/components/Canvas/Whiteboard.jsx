@@ -4,7 +4,7 @@ import io from "socket.io-client";
 import styled, { useTheme } from 'styled-components';
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { useUser } from "../../ContextProvider/UserProvider";
-import { _getDashboard } from '../../api/api';
+import { _getDashboard, _getWhiteboard, _saveCanvasToDB } from '../../api/api';
 
 const CanvasWrapper = styled.div`
   position: relative;
@@ -123,15 +123,14 @@ const Whiteboard = ({ tool, penColor, lineWidth = 2 }) => {
     if (!user) return;
     const fetchWhiteboard = async () => {
       try {
-        const response = await fetch(`/api/whiteboard/${id}?token=${sessionToken}`, {
-          headers: { Authorization: user.token },
-        });
+        const response = await _getWhiteboard(id, user._id)
         if (response.status === 401 || response.status === 403) {
           navigate("/login");
           return;
         }
         const data = await response.json();
         if (data.pages && data.pages.length > 0) {
+          console.log("canvas data", data.pages[0].canvasData);
           setCanvasData(data.pages[0].canvasData);
         }
       } catch (error) {
@@ -372,11 +371,16 @@ const Whiteboard = ({ tool, penColor, lineWidth = 2 }) => {
     });
   };
 
-  const saveCanvasState = () => {
+  const saveCanvasState = async () => {
     const canvas = fabricCanvasRef.current;
     if (!canvas) return;
     const json = canvas.toJSON();
     console.log('Canvas state:', json);
+
+    const response = await _saveCanvasToDB(id, json, user._id, sessionToken);
+
+    console.log("save response", response);
+
     return json;
   };
 
