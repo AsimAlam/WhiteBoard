@@ -18,7 +18,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route element={<Layout />}>
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/view" element={<ViewBoard />} />
+              <Route path="/view/:id" element={<ViewBoard />} />
               <Route path="/whiteboard/:id" element={<CanvasContainer />} />
             </Route>
           </Routes>

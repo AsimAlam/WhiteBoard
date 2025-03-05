@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { _createNewBoard } from "../../api/api";
 
 const AddBoardsWrapper = styled.div`
-    width: 15rem;
+    width: 14rem;
     max-height: 200px;
     margin: 1rem;
     border-radius: 10px;

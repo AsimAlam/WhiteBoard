@@ -70,7 +70,41 @@ export const _getWhiteboard = async (whiteboardId, userId) => {
     } catch (error) {
         return error;
     }
+}
 
+export const _getAllWhiteboard = async () => {
+    try {
+        const response = await fetch(`${config.BACKEND_URL}${config.GET_ALL_WHITEBOARD}`, {
+            method: 'GET',
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
 
+        const result = await response.json();
+        // console.log(result);
+        return result;
+
+    } catch (error) {
+        return error;
+    }
+}
+
+export const _deleteWhiteboard = async (whiteboardId, userId) => {
+    try {
+        const response = await fetch(`${config.BACKEND_URL}${config.DELETE_BOARD(whiteboardId)}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'Application/json',
+                Authorization: userId
+            },
+        });
+        console.log("delete response", response);
+        return response;
+
+    } catch (error) {
+        console.log("error", error);
+        return error;
+    }
 }
 

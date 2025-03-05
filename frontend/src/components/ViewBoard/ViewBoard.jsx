@@ -2,13 +2,15 @@ import styled from "styled-components";
 import Thumbnail from "./Thumbnail";
 import BoardDetails from "./BoardDetails";
 import BoardOperations from "./BoardOperations";
+import { useLocation } from "react-router-dom";
+import { useEffect } from "react";
 
 const ViewBoardWrapper = styled.div`
     height: 90vh;
     width: 100%;
     display: flex;
     flex-direction: row;
-    background-color:  ${({theme}) => theme.body};
+    background-color:  ${({ theme }) => theme.body};
 `;
 
 const ThumbnailContainer = styled.div`
@@ -28,14 +30,23 @@ const DetailWrapper = styled.div`
 
 
 const ViewBoard = () => {
-    return(
+
+    const Location = useLocation();
+    const { boardData } = Location.state || {};
+
+    useEffect(() => {
+        console.log(boardData);
+    }, [boardData]);
+
+
+    return (
         <ViewBoardWrapper>
             <ThumbnailContainer>
                 <Thumbnail />
             </ThumbnailContainer>
             <DetailWrapper>
-                <BoardDetails name = "TimeStamp/Name" notes = "lorem imsum"/>
-                <BoardOperations/>
+                <BoardDetails name="TimeStamp/Name" notes="lorem imsum" />
+                <BoardOperations boardData={boardData} />
             </DetailWrapper>
         </ViewBoardWrapper>
     );
