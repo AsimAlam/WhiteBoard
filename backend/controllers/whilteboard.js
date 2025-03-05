@@ -22,6 +22,18 @@ router.post("/create", async (req, res) => {
 
 });
 
+router.get("/get-all-whiteboard", async (req, res) => {
+  try {
+    console.log("dfss");
+    const allWhiteboard = await Whiteboard.find();
+    console.log(allWhiteboard);
+    res.json(allWhiteboard);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Server error", error: error });
+  }
+});
+
 // Save a drawing
 router.put("/:id/save-drawing", authMiddleware, async (req, res) => {
   const { id } = req.params;
@@ -49,6 +61,20 @@ router.put("/:id/save-drawing", authMiddleware, async (req, res) => {
     res.status(500).json({ message: "Error saving drawing" });
   }
 });
+
+router.delete("/:id", authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await Whiteboard.deleteOne({ _id: id });
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ message: "Whiteboard not found" });
+    }
+    res.status(200).json({ message: "Whiteboard deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 
 router.post("/generate-session-link", async (req, res) => {
   const { whiteboardId } = req.body;
@@ -83,7 +109,7 @@ router.get("/:id", authMiddleware, async (req, res) => {
     // }
     res.json(whiteboard);
   } catch (err) {
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error", error: err });
   }
 });
 

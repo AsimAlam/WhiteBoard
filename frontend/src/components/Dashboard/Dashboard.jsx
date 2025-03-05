@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { _getDashboard } from "../../api/api";
+import { _getAllWhiteboard, _getDashboard } from "../../api/api";
 import styled from "styled-components";
 import NewBoard from '../Boards/NewBoard';
 import RecentBoard from '../Boards/RecentBoard';
@@ -36,7 +36,8 @@ flex-wrap: wrap;
 `;
 
 const Dashboard = () => {
-  const { setUser } = useUser();
+  const { user, setUser } = useUser();
+  const [allWhiteboard, setAllWhiteboard] = useState([]);
 
   const navigate = useNavigate();
 
@@ -47,7 +48,7 @@ const Dashboard = () => {
       const data = await response?.json();
       console.log("data", data);
       console.log("uri", encodeURIComponent(window.location.href), window.location.href);
-      setUser(data?.data);
+      if (data?.data) setUser(data?.data);
       if (data?.data && !window.location.href.includes("/dashboard")) {
         navigate(`${encodeURIComponent(window.location.href)}`);
       }
@@ -56,8 +57,28 @@ const Dashboard = () => {
     }
   };
 
+  const getAllWhiteboard = async () => {
+    try {
+      const response = await _getAllWhiteboard(user._id);
+      if (response.status === 401 || response.status === 403) {
+        navigate("/login");
+        return;
+      }
+      console.log(response);
+      setAllWhiteboard(response);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const Refresh = async () => {
+    console.log("inside refresh");
+    await getAllWhiteboard();
+  }
+
   useEffect(() => {
     fetchDashboardData();
+    getAllWhiteboard();
   }, []);
 
   return (
@@ -72,14 +93,17 @@ const Dashboard = () => {
       </DashboardHeader>
       <DashboardBody>
         <NewBoard />
+        {allWhiteboard.map((board, index) => (
+          <RecentBoard data={board} Refresh={Refresh} />
+        ))}
+        {/* <RecentBoard />
         <RecentBoard />
         <RecentBoard />
         <RecentBoard />
         <RecentBoard />
         <RecentBoard />
         <RecentBoard />
-        <RecentBoard />
-        <RecentBoard />
+        <RecentBoard /> */}
       </DashboardBody>
     </DashboardWrapper>
   );

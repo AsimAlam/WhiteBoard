@@ -12,6 +12,8 @@ const config = {
     CREATE_BOARD_URL: "/whiteboard/create",
     SAVE_DRAWING: (whiteboardId) => `/whiteboard/${whiteboardId}/save-drawing`,
     GET_DRAWING: (whiteboardId) => `/whiteboard/${whiteboardId}`,
+    GET_ALL_WHITEBOARD: "/whiteboard/get-all-whiteboard",
+    DELETE_BOARD: (whiteboardId) => `/whiteboard/${whiteboardId}`,
 };
 
 export default config;

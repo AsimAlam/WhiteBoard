@@ -130,12 +130,15 @@ const Navbar = () => {
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
   const { user, setUser } = useUser();
+  const [profileUrl, setProfileUrl] = useState('');
 
   const handleAvatarClick = () => {
     setShowDropdown((prev) => !prev);
   };
 
   useEffect(() => {
+    setProfileUrl(JSON.parse(localStorage.getItem('user')).profilePic);
+    // console.log("inside navbar", JSON.parse(localStorage.getItem('user')).profilePic);
     const handleClickOutside = (event) => {
       if (
         dropdownRef.current &&
@@ -168,7 +171,7 @@ const Navbar = () => {
         </ToggleButton>
         <AvatarContainer>
           <Avatar onClick={handleAvatarClick}>
-            <AvatarImg src={user.profilePic} alt="Avatar" />
+            <AvatarImg src={profileUrl} alt="Avatar" />
           </Avatar>
           {showDropdown && (
             <DropdownContainer ref={dropdownRef}>

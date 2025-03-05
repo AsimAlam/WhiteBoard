@@ -24,9 +24,9 @@ const ButtonWrapper = styled.div`
     text-align: center;
 `;
 
-const ExportButton = ( data ) => {
-    return(
-        <ButtonWrapper>
+const ExportButton = (data) => {
+    return (
+        <ButtonWrapper onClick={data.onClick}>
             {data.icon}
             {data.data}
         </ButtonWrapper>

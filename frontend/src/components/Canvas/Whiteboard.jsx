@@ -379,6 +379,11 @@ const Whiteboard = ({ tool, penColor, lineWidth = 2 }) => {
 
     const response = await _saveCanvasToDB(id, json, user._id, sessionToken);
 
+    if (response.status === 401 || response.status === 403) {
+      navigate("/login");
+      return;
+    }
+
     console.log("save response", response);
 
     return json;

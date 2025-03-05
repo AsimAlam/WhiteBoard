@@ -4,9 +4,11 @@ import { ReactComponent as PreviewIcon } from "../../assets/codeIcon.svg";
 import { FaEllipsisV, FaPen, FaTrashAlt } from "react-icons/fa";
 import { MdOpenInNew } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
+import { _deleteWhiteboard } from "../../api/api";
+import { useUser } from "../../ContextProvider/UserProvider";
 
 const BoardWrapper = styled.div`
-  width: 15rem;
+  width: 14rem;
   max-height: 200px;
   margin: 1rem;
   border-radius: 10px;
@@ -146,10 +148,11 @@ const DropdownItem = styled.div`
   }
 `;
 
-const RecentBoard = () => {
+const RecentBoard = ({ data, Refresh }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+  const { user } = useUser();
 
   const toggleDropdown = () => {
     setShowDropdown((prev) => !prev);
@@ -166,18 +169,36 @@ const RecentBoard = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const handleDelete = async () => {
+    try {
+      const response = await _deleteWhiteboard(data._id, user._id);
+      console.log("dlete response", response);
+      if (response.status === 401 || response.status === 403) {
+        setShowDropdown(false);
+        navigate("/login");
+        return;
+      } else if (response.status === 200) {
+        setShowDropdown(false);
+        Refresh();
+      }
+      // console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
     <BoardWrapper>
       <PreviewBox>
         <IconWrapper />
       </PreviewBox>
       <BoardDetails>
-        <AddText>Name/TimeStamp</AddText>
+        <AddText>{data.name}</AddText>
         <OptionsContainer ref={dropdownRef}>
           <VerticalDots onClick={toggleDropdown} />
           {showDropdown && (
             <DropdownContainer>
-              <DropdownItem onClick={() => navigate("/view")}>
+              <DropdownItem onClick={() => navigate(`/view/${data._id}`, { state: { boardData: data } })}>
                 <MdOpenInNew size={20} />
                 Open
               </DropdownItem>
@@ -185,7 +206,7 @@ const RecentBoard = () => {
                 <FaPen size={18} />
                 Rename
               </DropdownItem>
-              <DropdownItem onClick={() => console.log("Delete board")}>
+              <DropdownItem onClick={handleDelete}>
                 <FaTrashAlt size={18} />
                 Delete
               </DropdownItem>
