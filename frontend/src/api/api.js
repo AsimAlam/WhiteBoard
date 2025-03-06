@@ -108,3 +108,22 @@ export const _deleteWhiteboard = async (whiteboardId, userId) => {
     }
 }
 
+export const _renameBoard = async (whiteboardId, userId, name) => {
+    try {
+        const response = await fetch(`${config.BACKEND_URL}${config.RENAME_BOARD(whiteboardId)}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'Application/json',
+                Authorization: userId
+            },
+            body: JSON.stringify({ name: name })
+        });
+
+        console.log("rename api response", response);
+        return response;
+
+    } catch (error) {
+        return error;
+    }
+}
+

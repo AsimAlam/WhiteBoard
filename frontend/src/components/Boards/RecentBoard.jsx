@@ -4,7 +4,7 @@ import { ReactComponent as PreviewIcon } from "../../assets/codeIcon.svg";
 import { FaEllipsisV, FaPen, FaTrashAlt } from "react-icons/fa";
 import { MdOpenInNew } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import { _deleteWhiteboard } from "../../api/api";
+import { _deleteWhiteboard, _renameBoard } from "../../api/api";
 import { useUser } from "../../ContextProvider/UserProvider";
 
 const BoardWrapper = styled.div`
@@ -18,12 +18,6 @@ const BoardWrapper = styled.div`
   justify-content: space-between;
   align-items: center;
   transition: transform 0.2s ease-in-out;
-  &:hover {
-    transform: scale(1.05);
-  }
-  &:active {
-    transform: scale(0.98);
-  }
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(0, 0, 0, 0.1);
   background-color: ${({ theme }) => theme.cardBg};
@@ -73,7 +67,17 @@ const AddText = styled.div`
   align-items: center;
 `;
 
-/* --- Options (Vertical Dots) and Dropdown Styling --- */
+const EditInput = styled.input`
+  width: 100%;
+  height: 100%;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: center;
+  border: none;
+  background: transparent;
+  color: ${({ theme }) => theme.text};
+  outline: none;
+`;
 
 const OptionsContainer = styled.div`
   position: relative;
@@ -81,7 +85,6 @@ const OptionsContainer = styled.div`
   align-items: center;
 `;
 
-/* Use React Icon for vertical dots */
 const VerticalDots = styled(FaEllipsisV)`
   font-size: 1.8rem;
   color: ${({ theme }) => theme.text};
@@ -94,7 +97,6 @@ const VerticalDots = styled(FaEllipsisV)`
   transition: background-color 0.3s;
 `;
 
-/* Dropdown fade-in animation */
 const fadeIn = keyframes`
   from {
     opacity: 0;
@@ -106,10 +108,9 @@ const fadeIn = keyframes`
   }
 `;
 
-/* Dropdown container styling with arrow pointer */
 const DropdownContainer = styled.div`
   position: absolute;
-  top: 120%; /* Adjust this to position the dropdown below the icon */
+  top: 120%;
   right: 0;
   background: ${({ theme }) => theme.dropdownBg || "#fff"};
   border-radius: 8px;
@@ -129,7 +130,6 @@ const DropdownContainer = styled.div`
   }
 `;
 
-/* Dropdown item styling */
 const DropdownItem = styled.div`
   padding: 0.8rem 1.2rem;
   display: flex;
@@ -150,7 +150,11 @@ const DropdownItem = styled.div`
 
 const RecentBoard = ({ data, Refresh }) => {
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedName, setEditedName] = useState(data.name);
   const dropdownRef = useRef(null);
+  const boardDetailsRef = useRef(null);
+  const inputRef = useRef(null);
   const navigate = useNavigate();
   const { user } = useUser();
 
@@ -158,21 +162,46 @@ const RecentBoard = ({ data, Refresh }) => {
     setShowDropdown((prev) => !prev);
   };
 
-  // Close dropdown when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClickOutsideDropdown = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowDropdown(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutsideDropdown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutsideDropdown);
+    };
   }, []);
+
+  useEffect(() => {
+    const handleClickOutsideBoardDetails = (event) => {
+      if (
+        boardDetailsRef.current &&
+        !boardDetailsRef.current.contains(event.target)
+      ) {
+        if (isEditing) {
+          setIsEditing(false);
+          setEditedName(data.name);
+        }
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutsideBoardDetails);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutsideBoardDetails);
+    };
+  }, [isEditing, data.name]);
+
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isEditing]);
 
   const handleDelete = async () => {
     try {
       const response = await _deleteWhiteboard(data._id, user._id);
-      console.log("dlete response", response);
+      console.log("delete response", response);
       if (response.status === 401 || response.status === 403) {
         setShowDropdown(false);
         navigate("/login");
@@ -181,28 +210,73 @@ const RecentBoard = ({ data, Refresh }) => {
         setShowDropdown(false);
         Refresh();
       }
-      // console.log(response);
     } catch (error) {
       console.log(error);
     }
-  }
+  };
+
+  const handleRename = async () => {
+    console.log("inside handle rename");
+    setIsEditing(false);
+    try {
+      const response = await _renameBoard(data._id, user._id, editedName);
+      if (response.status === 401 || response.status === 403) {
+        setShowDropdown(false);
+        navigate("/login");
+        return;
+      } else if (response.status === 200) {
+        setShowDropdown(false);
+        setIsEditing(false);
+        Refresh();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <BoardWrapper>
       <PreviewBox>
         <IconWrapper />
       </PreviewBox>
-      <BoardDetails>
-        <AddText>{data.name}</AddText>
+      <BoardDetails ref={boardDetailsRef}>
+        {isEditing ? (
+          <EditInput
+            ref={inputRef}
+            value={editedName}
+            onChange={(e) => setEditedName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleRename();
+              }
+              if (e.key === "Escape") {
+                setIsEditing(false);
+                setEditedName(data.name);
+              }
+            }}
+          />
+        ) : (
+          <AddText>{data.name}</AddText>
+        )}
         <OptionsContainer ref={dropdownRef}>
           <VerticalDots onClick={toggleDropdown} />
           {showDropdown && (
             <DropdownContainer>
-              <DropdownItem onClick={() => navigate(`/view/${data._id}`, { state: { boardData: data } })}>
+              <DropdownItem
+                onClick={() =>
+                  navigate(`/view/${data._id}`, { state: { boardData: data } })
+                }
+              >
                 <MdOpenInNew size={20} />
                 Open
               </DropdownItem>
-              <DropdownItem onClick={() => console.log("Rename board")}>
+              <DropdownItem
+                onClick={() => {
+                  setIsEditing(true);
+                  setEditedName(data.name);
+                  setShowDropdown(false);
+                }}
+              >
                 <FaPen size={18} />
                 Rename
               </DropdownItem>

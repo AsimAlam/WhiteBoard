@@ -14,6 +14,7 @@ const config = {
     GET_DRAWING: (whiteboardId) => `/whiteboard/${whiteboardId}`,
     GET_ALL_WHITEBOARD: "/whiteboard/get-all-whiteboard",
     DELETE_BOARD: (whiteboardId) => `/whiteboard/${whiteboardId}`,
+    RENAME_BOARD: (whiteboardId) => `/whiteboard/${whiteboardId}`,
 };
 
 export default config;

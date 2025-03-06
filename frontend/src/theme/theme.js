@@ -17,7 +17,11 @@ export const lightTheme = {
     cardPreview: "#E8ECFC",
     canvasBg: "#F1F2F5",
     toolbar: "#E8F9FF",
-    toolbarHover: "#C4D9FF"
+    toolbarHover: "#C4D9FF",
+    inputBackground: "#f0f0f0",
+    lineBorder: "#0000001A",
+    searchIcon: "#000000",
+    sortByColor: "#000000",
 };
 
 export const darkTheme = {
@@ -40,5 +44,8 @@ export const darkTheme = {
     canvasBg: "#222",
     toolbar: "#0D0C0F",
     toolbarHover: "#141317",
-
+    inputBackground: "#171717",
+    lineBorder: "#C6C6C6",
+    searchIcon: "#B7B7B7",
+    sortByColor: "#BCBCBC",
 };
