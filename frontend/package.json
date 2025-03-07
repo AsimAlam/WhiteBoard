@@ -6,6 +6,7 @@
     "cra-template": "1.2.0",
     "fabric": "^6.6.0",
     "firebase": "^11.3.1",
+    "jspdf": "^3.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.4.0",

@@ -30,7 +30,7 @@ export const _loginWithGoogle = async (boardId, token, userId, canvasJSON) => {
     window.location.href = `${config.BACKEND_URL}${config.GOOGLE_AUTH_URL}`;
 };
 
-export const _saveCanvasToDB = async (whiteboardId, canvasJSON, userId, token) => {
+export const _saveCanvasToDB = async (whiteboardId, canvasJSON, thumbnail, userId, token) => {
     try {
         const response = await fetch(
             `${config.BACKEND_URL}${config.SAVE_DRAWING(whiteboardId)}?token=${token}`,
@@ -40,7 +40,7 @@ export const _saveCanvasToDB = async (whiteboardId, canvasJSON, userId, token) =
                     "Content-Type": "application/json",
                     Authorization: userId
                 },
-                body: JSON.stringify({ canvas: canvasJSON })
+                body: JSON.stringify({ canvas: canvasJSON, thumbnail: thumbnail })
             }
         );
 

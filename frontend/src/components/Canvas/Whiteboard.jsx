@@ -377,7 +377,10 @@ const Whiteboard = ({ tool, penColor, lineWidth = 2 }) => {
     const json = canvas.toJSON();
     console.log('Canvas state:', json);
 
-    const response = await _saveCanvasToDB(id, json, user._id, sessionToken);
+    const thumbnail = canvas.toDataURL({ format: 'png', multiplier: 0.25 });
+    console.log('Thumbnail generated:', thumbnail);
+
+    const response = await _saveCanvasToDB(id, json, thumbnail, user._id, sessionToken);
 
     if (response.status === 401 || response.status === 403) {
       navigate("/login");

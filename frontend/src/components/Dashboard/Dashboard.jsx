@@ -123,9 +123,13 @@ const Dashboard = () => {
     console.log("response", response);
     if (response.ok) {
       const data = await response?.json();
-      console.log("data", data);
-      console.log("uri", encodeURIComponent(window.location.href), window.location.href);
-      if (data?.data) setUser(data?.data);
+      // console.log("data", data?.data);
+      // console.log("uri", encodeURIComponent(window.location.href), window.location.href);
+      if (data?.data) {
+        // console.log("data parse", JSON.stringify(data.data));
+        localStorage.setItem('user', JSON.stringify(data.data));
+        setUser(data?.data);
+      }
       if (data?.data && !window.location.href.includes("/dashboard")) {
         navigate(`${encodeURIComponent(window.location.href)}`);
       }
@@ -141,7 +145,7 @@ const Dashboard = () => {
         navigate("/login");
         return;
       }
-      // console.log(response);
+      console.log(response);
       setAllWhiteboard(response);
     } catch (error) {
       console.log(error);
