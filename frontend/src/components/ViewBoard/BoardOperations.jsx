@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 const BoardOperationsWrapper = styled.div`
     height: 30%;
     width: 100%;
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-top: 1px solid ${({ theme }) => theme.lineBorder};
     display: flex;
     flex-direction: row;
     justify-content: space-around;

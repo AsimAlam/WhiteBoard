@@ -38,7 +38,7 @@ router.get("/get-all-whiteboard", async (req, res) => {
 router.put("/:id/save-drawing", authMiddleware, async (req, res) => {
   const { id } = req.params;
   const { token } = req.query;
-  const { canvas } = req.body;
+  const { canvas, thumbnail } = req.body;
 
   console.log(id, token, canvas);
 
@@ -52,8 +52,9 @@ router.put("/:id/save-drawing", authMiddleware, async (req, res) => {
 
     if (whiteboard.pages && whiteboard.pages.length > 0) {
       whiteboard.pages[0].canvasData = canvas;
+      whiteboard.pages[0].thumbnail = thumbnail;
     } else {
-      whiteboard.pages = [{ pageNumber: 1, canvasData: canvas }];
+      whiteboard.pages = [{ pageNumber: 1, canvasData: canvas, thumbnail: thumbnail }];
     }
     await whiteboard.save();
     res.json({ message: "Whiteboard updated successfully" });

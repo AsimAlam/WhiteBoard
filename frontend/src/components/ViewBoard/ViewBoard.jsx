@@ -3,7 +3,7 @@ import Thumbnail from "./Thumbnail";
 import BoardDetails from "./BoardDetails";
 import BoardOperations from "./BoardOperations";
 import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 const ViewBoardWrapper = styled.div`
     height: 90vh;
@@ -25,28 +25,30 @@ const DetailWrapper = styled.div`
     width: 30%;
     display: flex;
     flex-direction: column;
-    border-left: 1px solid rgba(0, 0, 0, 0.1);
+    border-left: 1px solid ${({ theme }) => theme.lineBorder};
 `;
 
 
 const ViewBoard = () => {
 
     const Location = useLocation();
-    const { boardData } = Location.state || {};
+    const { boardData } = Location.state;
+
+    const data = useRef(boardData);
 
     useEffect(() => {
-        console.log(boardData);
+        console.log(boardData, data.current);
     }, [boardData]);
 
 
     return (
         <ViewBoardWrapper>
             <ThumbnailContainer>
-                <Thumbnail />
+                <Thumbnail data={data.current} />
             </ThumbnailContainer>
             <DetailWrapper>
                 <BoardDetails name="TimeStamp/Name" notes="lorem imsum" />
-                <BoardOperations boardData={boardData} />
+                <BoardOperations boardData={data.current} />
             </DetailWrapper>
         </ViewBoardWrapper>
     );

@@ -163,6 +163,7 @@ const RecentBoard = ({ data, Refresh }) => {
   };
 
   useEffect(() => {
+    // console.log("data in recent", data);
     const handleClickOutsideDropdown = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowDropdown(false);
@@ -237,7 +238,20 @@ const RecentBoard = ({ data, Refresh }) => {
   return (
     <BoardWrapper>
       <PreviewBox>
-        <IconWrapper />
+        {data?.pages[0]?.thumbnail ? (
+          <img
+            src={data?.pages[0]?.thumbnail}
+            alt="Whiteboard Thumbnail"
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              borderRadius: '10px'
+            }}
+          />
+        ) : (
+          <IconWrapper />
+        )}
       </PreviewBox>
       <BoardDetails ref={boardDetailsRef}>
         {isEditing ? (

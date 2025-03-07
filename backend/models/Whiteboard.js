@@ -2,7 +2,8 @@ const mongoose = require("mongoose");
 
 const PageSchema = new mongoose.Schema({
     pageNumber: { type: Number, required: true },
-    canvasData: { type: Object, default: {} } // JSON representing the canvas state (can store paths, shapes, text, etc.)
+    canvasData: { type: Object, default: {} },
+    thumbnail: { type: String, default: "" }
 });
 
 const CollaboratorSchema = new mongoose.Schema({
