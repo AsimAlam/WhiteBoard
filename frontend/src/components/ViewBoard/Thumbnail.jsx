@@ -1,88 +1,81 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { useParams } from "react-router-dom";
-import { jsPDF } from "jspdf";
-import * as fabric from 'fabric';
+import React, { useState, useEffect, useContext } from 'react';
+import { Document, Page, pdfjs } from 'react-pdf';
+import { jsPDF } from 'jspdf';
+import styled, { ThemeContext, ThemeProvider, useTheme } from 'styled-components';
+
+// Make sure this worker file is correctly placed in your public folder.
+pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
+
+const ThumbnailWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background: ${({ theme }) => theme.canvasBg};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 
 const Thumbnail = ({ data }) => {
-    const { id } = useParams();
-    const [pdfUrl, setPdfUrl] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const didGenerate = useRef(false);
-
-    const fetchAndGeneratePdf = () => {
-        if (didGenerate.current) return; // Prevent multiple runs
-        didGenerate.current = true;
-
-        if (!data || !data.pages || data.pages.length === 0) {
-            console.error('No page data available');
-            setLoading(false);
-            return;
-        }
-        const canvasData = data.pages[0].canvasData;
-        if (!canvasData) {
-            console.error('No canvas data available');
-            setLoading(false);
-            return;
-        }
-
-        // Create an offscreen canvas element with desired dimensions.
-        const offCanvas = document.createElement('canvas');
-        offCanvas.width = 800;
-        offCanvas.height = 600;
-
-        // Create a StaticCanvas instance.
-        // Use the saved background if provided (or fallback to white).
-        const fabricCanvas = new fabric.StaticCanvas(offCanvas, {
-            backgroundColor: canvasData.background || '#fff'
-        });
-
-        console.log("Loading canvas data using loadFromJSON...");
-        // Use loadFromJSON to load and render the canvas from saved JSON.
-        fabricCanvas.loadFromJSON(canvasData, () => {
-            console.log("loadFromJSON callback triggered.");
-            fabricCanvas.renderAll();
-            console.log("Rendered canvas objects:", fabricCanvas.getObjects());
-
-            // Wait to ensure everything (especially asynchronous elements) is rendered.
-            setTimeout(() => {
-                const dataURL = offCanvas.toDataURL({ format: 'png' });
-                console.log('Generated dataURL:', dataURL);
-
-                // Create a PDF (landscape mode) and add the image.
-                const pdf = new jsPDF({ orientation: 'landscape' });
-                pdf.addImage(
-                    dataURL,
-                    'PNG',
-                    0,
-                    0,
-                    pdf.internal.pageSize.getWidth(),
-                    pdf.internal.pageSize.getHeight()
-                );
-                const pdfDataUrl = pdf.output('datauristring');
-                console.log('Generated PDF Data URL:', pdfDataUrl);
-
-                setPdfUrl(pdfDataUrl);
-                setLoading(false);
-            }, 1000); // Adjust delay if necessary (increase if your canvas contains async objects)
-        });
-    };
+    const [pdfDataUrl, setPdfDataUrl] = useState(null);
+    const [error, setError] = useState(null);
+    const theme = useTheme();
 
     useEffect(() => {
-        if (data && !pdfUrl) {
-            fetchAndGeneratePdf();
-        }
-    }, [data, pdfUrl]);
+        if (data && data.pages && data.pages.length > 0) {
+            const imageData = data.pages[0].thumbnail;
+            if (imageData && imageData.startsWith('data:image/png')) {
+                try {
+                    const doc = new jsPDF({
+                        orientation: 'landscape',
+                        unit: 'px',
+                        format: [500, 200] // New dimensions for a square PDF page
+                    });
+                    doc.addImage(imageData, 'PNG', 0, 0, 500, 200);
 
-    if (loading) return <div>Loading PDF...</div>;
+                    const generatedPdfDataUrl = doc.output('datauristring');
+                    console.log("Generated PDF data URL:", generatedPdfDataUrl);
+
+                    // For debugging: open the generated PDF in a new tab.
+                    // window.open(generatedPdfDataUrl);
+
+                    setPdfDataUrl(generatedPdfDataUrl);
+                } catch (err) {
+                    console.error("Error generating PDF:", err);
+                    setError("Error generating PDF: " + err.toString());
+                }
+            } else {
+                setError("Invalid or missing thumbnail image data.");
+            }
+        } else {
+            setError("No page data available.");
+        }
+    }, [data]);
+
+    if (error) {
+        return (
+            <ThumbnailWrapper>
+                <p>Error: {error}</p>
+            </ThumbnailWrapper>
+        );
+    }
 
     return (
-        <iframe
-            src={pdfUrl}
-            width="100%"
-            height="100%"
-            title="Whiteboard PDF"
-            style={{ border: 'none' }}
-        />
+        <ThumbnailWrapper>
+            {pdfDataUrl ? (
+                <Document
+                    file={pdfDataUrl}
+                    onLoadError={(err) => {
+                        console.error("Error loading PDF:", err);
+                        setError("Error loading PDF: " + err.toString());
+                    }}
+                >
+                    <Page pageNumber={1} width={500} />
+                </Document>
+            ) : (
+                <p>Loading PDF...</p>
+            )}
+        </ThumbnailWrapper>
     );
 };
 

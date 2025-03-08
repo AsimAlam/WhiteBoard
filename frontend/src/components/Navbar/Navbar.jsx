@@ -137,7 +137,7 @@ const Navbar = () => {
   };
 
   useEffect(() => {
-    setProfileUrl(JSON.parse(localStorage.getItem('user')).profilePic);
+    setProfileUrl(JSON.parse(localStorage.getItem('user'))?.profilePic);
     // console.log("inside navbar", JSON.parse(localStorage.getItem('user')).profilePic);
     const handleClickOutside = (event) => {
       if (
