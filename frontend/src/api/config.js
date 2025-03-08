@@ -15,6 +15,9 @@ const config = {
     GET_ALL_WHITEBOARD: "/whiteboard/get-all-whiteboard",
     DELETE_BOARD: (whiteboardId) => `/whiteboard/${whiteboardId}`,
     RENAME_BOARD: (whiteboardId) => `/whiteboard/${whiteboardId}`,
+    ADD_COLLABORATOR: (whiteboardId) => `/whiteboard/${whiteboardId}/add-collaborator`,
+    UPDATE_COLLABORATOR: (whiteboardId) => `/whiteboard/${whiteboardId}/update-collaborator`,
+    GET_USER: (userId) => `/whiteboard/${userId}/get-user`,
 };
 
 export default config;

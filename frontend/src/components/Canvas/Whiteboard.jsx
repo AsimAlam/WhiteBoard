@@ -4,7 +4,7 @@ import io from "socket.io-client";
 import styled, { useTheme } from 'styled-components';
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { useUser } from "../../ContextProvider/UserProvider";
-import { _getDashboard, _getWhiteboard, _saveCanvasToDB } from '../../api/api';
+import { _addCollaborator, _getDashboard, _getWhiteboard, _saveCanvasToDB } from '../../api/api';
 
 const CanvasWrapper = styled.div`
   position: relative;
@@ -53,7 +53,7 @@ const RedoButton = styled.button`
 
 const UPDATE_THROTTLE_MS = 100; // You can adjust this if needed
 
-const Whiteboard = ({ tool, penColor, lineWidth = 2 }) => {
+const Whiteboard = ({ tool, penColor, lineWidth = 2, role, setRole }) => {
   const canvasRef = useRef(null);
   const fabricCanvasRef = useRef(null);
   const socketRef = useRef(null);
@@ -133,6 +133,19 @@ const Whiteboard = ({ tool, penColor, lineWidth = 2 }) => {
           console.log("canvas data", data.pages[0].canvasData);
           setCanvasData(data.pages[0].canvasData);
         }
+
+        if (data.ownerId !== user._id) {
+          const collaborators = data.collaborators.find(collab => collab.userId === user._id);
+          if (!collaborators) {
+            await _addCollaborator(data._id, data.ownerId, 'read', user._id);
+          } else {
+            console.log("role", collaborators.role);
+            setRole(collaborators.role);
+          }
+        } else {
+          setRole('write');
+        }
+
       } catch (error) {
         console.error("Error fetching whiteboard:", error);
       }
