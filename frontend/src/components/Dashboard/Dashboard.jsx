@@ -139,6 +139,7 @@ const Dashboard = () => {
   };
 
   const getAllWhiteboard = async () => {
+    console.log("user.id", user._id);
     try {
       const response = await _getAllWhiteboard(user._id);
       if (response.status === 401 || response.status === 403) {
@@ -146,7 +147,7 @@ const Dashboard = () => {
         return;
       }
       console.log(response);
-      setAllWhiteboard(response);
+      if (response?.message !== "Server error") setAllWhiteboard(response);
     } catch (error) {
       console.log(error);
     }
@@ -158,11 +159,14 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    fetchDashboardData();
     getAllWhiteboard();
+  }, [user]);
+
+  useEffect(() => {
+    fetchDashboardData();
   }, []);
 
-  let filteredBoards = allWhiteboard.filter((board) =>
+  let filteredBoards = allWhiteboard?.filter((board) =>
     board.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 

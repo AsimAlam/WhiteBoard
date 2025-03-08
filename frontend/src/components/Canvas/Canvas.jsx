@@ -64,7 +64,7 @@ const ColorButton = styled.button`
   cursor: pointer;
 `;
 
-const Canvas = ({ setTool, currentTool, setPenColor }) => {
+const Canvas = ({ setTool, currentTool, setPenColor, role }) => {
   const [collapsed, setCollapsed] = useState(false);
   const toggleToolbar = () => setCollapsed(!collapsed);
 
@@ -82,41 +82,46 @@ const Canvas = ({ setTool, currentTool, setPenColor }) => {
 
   return (
     <Toolbar collapsed={collapsed}>
-      <ToggleButton onClick={toggleToolbar}>
-        {collapsed ? '>>' : '<<'}
-      </ToggleButton>
-      <ToolbarItem onClick={() => handleSelectTool('select')}>
-        <Icon>🖱️</Icon>
-        {!collapsed && <ItemLabel>Select</ItemLabel>}
-      </ToolbarItem>
-      <ToolbarItem onClick={() => handleSelectTool('pen')}>
-        <Icon>✏️</Icon>
-        {!collapsed && <ItemLabel>Pen</ItemLabel>}
-      </ToolbarItem>
-      <ToolbarItem onClick={() => handleSelectTool('text')}>
-        <Icon>📝</Icon>
-        {!collapsed && <ItemLabel>Text</ItemLabel>}
-      </ToolbarItem>
-      <ToolbarItem onClick={() => handleSelectTool('shape')}>
-        <Icon>⬛</Icon>
-        {!collapsed && <ItemLabel>Shape</ItemLabel>}
-      </ToolbarItem>
-      <ToolbarItem onClick={() => handleSelectTool('eraser')}>
-        <Icon>🩹</Icon>
-        {!collapsed && <ItemLabel>Eraser</ItemLabel>}
-      </ToolbarItem>
-      {currentTool === 'pen' && !collapsed && (
-        <ColorSelector>
-          {penColors.map((color) => (
-            <ColorButton
-              key={color}
-              color={color}
-              selected={selectedPenColor === color}
-              onClick={() => handlePenColorSelect(color)}
-            />
-          ))}
-        </ColorSelector>
-      )}
+      {role === "read" ? "You are in read only mode. Contact the board owner for editing permission." :
+        <>
+          <ToggleButton onClick={toggleToolbar}>
+            {collapsed ? '>>' : '<<'}
+          </ToggleButton>
+          <ToolbarItem onClick={() => handleSelectTool('select')}>
+            <Icon>🖱️</Icon>
+            {!collapsed && <ItemLabel>Select</ItemLabel>}
+          </ToolbarItem>
+          <ToolbarItem onClick={() => handleSelectTool('pen')}>
+            <Icon>✏️</Icon>
+            {!collapsed && <ItemLabel>Pen</ItemLabel>}
+          </ToolbarItem>
+          <ToolbarItem onClick={() => handleSelectTool('text')}>
+            <Icon>📝</Icon>
+            {!collapsed && <ItemLabel>Text</ItemLabel>}
+          </ToolbarItem>
+          <ToolbarItem onClick={() => handleSelectTool('shape')}>
+            <Icon>⬛</Icon>
+            {!collapsed && <ItemLabel>Shape</ItemLabel>}
+          </ToolbarItem>
+          <ToolbarItem onClick={() => handleSelectTool('eraser')}>
+            <Icon>🩹</Icon>
+            {!collapsed && <ItemLabel>Eraser</ItemLabel>}
+          </ToolbarItem>
+          {currentTool === 'pen' && !collapsed && (
+            <ColorSelector>
+              {penColors.map((color) => (
+                <ColorButton
+                  key={color}
+                  color={color}
+                  selected={selectedPenColor === color}
+                  onClick={() => handlePenColorSelect(color)}
+                />
+              ))}
+            </ColorSelector>
+          )}
+
+        </>}
+
     </Toolbar>
   );
 };

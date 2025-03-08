@@ -4,19 +4,19 @@ import Canvas from './Canvas';
 import Whiteboard from './Whiteboard';
 
 const lightTheme = {
-    body: '#ffffff',
-    canvasBg: '#ffffff',
-    toolbar: '#f0f0f0',
-    toolbarHover: '#e0e0e0',
-    text: '#000000'
+  body: '#ffffff',
+  canvasBg: '#ffffff',
+  toolbar: '#f0f0f0',
+  toolbarHover: '#e0e0e0',
+  text: '#000000'
 };
 
 const darkTheme = {
-    body: '#222222',
-    canvasBg: '#333333',
-    toolbar: '#555555',
-    toolbarHover: '#666666',
-    text: '#ffffff'
+  body: '#222222',
+  canvasBg: '#333333',
+  toolbar: '#555555',
+  toolbarHover: '#666666',
+  text: '#ffffff'
 };
 
 const ContainerWrapper = styled.div`
@@ -42,22 +42,24 @@ const ToggleThemeButton = styled.button`
 `;
 
 const CanvasContainer = () => {
-    // Manage the current tool: 'pen', 'eraser', 'shape', or 'text'
-    const [tool, setTool] = useState('pen');
-    // Manage the pen color; default is black.
-    const [penColor, setPenColor] = useState('#000000');
+  // Manage the current tool: 'pen', 'eraser', 'shape', or 'text'
+  const [tool, setTool] = useState('pen');
+  // Manage the pen color; default is black.
+  const [penColor, setPenColor] = useState('#000000');
+  const [role, setRole] = useState('read');
 
 
-    return (
-        <CanvasWrapper>
-            <Canvas
-                setTool={setTool}
-                setPenColor={setPenColor}
-                currentTool={tool}
-            />
-            <Whiteboard tool={tool} penColor={penColor} lineWidth={2} />
-        </CanvasWrapper>
-    );
+  return (
+    <CanvasWrapper>
+      <Canvas
+        setTool={setTool}
+        setPenColor={setPenColor}
+        currentTool={tool}
+        role={role}
+      />
+      <Whiteboard tool={tool} penColor={penColor} lineWidth={2} role={role} setRole={setRole} />
+    </CanvasWrapper>
+  );
 };
 
 export default CanvasContainer;

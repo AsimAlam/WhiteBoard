@@ -72,9 +72,10 @@ export const _getWhiteboard = async (whiteboardId, userId) => {
     }
 }
 
-export const _getAllWhiteboard = async () => {
+export const _getAllWhiteboard = async (userId) => {
+    console.log("getallwhiteboard", userId);
     try {
-        const response = await fetch(`${config.BACKEND_URL}${config.GET_ALL_WHITEBOARD}`, {
+        const response = await fetch(`${config.BACKEND_URL}${config.GET_ALL_WHITEBOARD}?userId=${userId}`, {
             method: 'GET',
             headers: {
                 "Content-Type": "application/json",
@@ -120,6 +121,64 @@ export const _renameBoard = async (whiteboardId, userId, name) => {
         });
 
         console.log("rename api response", response);
+        return response;
+
+    } catch (error) {
+        return error;
+    }
+}
+
+export const _addCollaborator = async (whiteboardId, ownerId, role, userId) => {
+    try {
+
+        const response = await fetch(`${config.BACKEND_URL}${config.ADD_COLLABORATOR(whiteboardId)}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'Application/json',
+                Authorization: ownerId
+            },
+            body: JSON.stringify({ userId: userId, role: role })
+        });
+
+        console.log("response from add collaboarator", response);
+
+        return response;
+
+    } catch (error) {
+        return error;
+    }
+}
+
+export const _updateCollaborator = async (whiteboardId, ownerId, role, userId) => {
+    try {
+
+        const response = await fetch(`${config.BACKEND_URL}${config.UPDATE_COLLABORATOR(whiteboardId)}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'Application/json',
+                Authorization: ownerId
+            },
+            body: JSON.stringify({ userId: userId, role: role })
+        });
+
+        console.log("response from add collaboarator", response);
+
+        return response;
+
+    } catch (error) {
+        return error;
+    }
+}
+
+export const _getUser = async (userId) => {
+    try {
+        const response = await fetch(`${config.BACKEND_URL}${config.GET_USER(userId)}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'Application/json'
+            }
+        });
+
         return response;
 
     } catch (error) {

@@ -5,6 +5,7 @@ const validateSessionToken = require("../middleware/validateSessionToken");
 const checkRole = require("../middleware/checkRole");
 const { v4: uuidv4 } = require("uuid");
 const authMiddleware = require("../middleware/authCheck");
+const User = require("../models/User");
 
 const router = express.Router();
 
@@ -23,9 +24,19 @@ router.post("/create", async (req, res) => {
 });
 
 router.get("/get-all-whiteboard", async (req, res) => {
+
+  const { userId } = req.query;
+
+  console.log("userid", userId);
+
   try {
     console.log("dfss");
-    const allWhiteboard = await Whiteboard.find();
+    const allWhiteboard = await Whiteboard.find({
+      $or: [
+        { ownerId: userId },
+        { "collaborators.userId": userId }
+      ]
+    });
     console.log(allWhiteboard);
     res.json(allWhiteboard);
   } catch (error) {
@@ -61,6 +72,62 @@ router.put("/:id/save-drawing", authMiddleware, async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: "Error saving drawing" });
   }
+});
+
+router.put("/:id/add-collaborator", authMiddleware, async (req, res) => {
+  const { id } = req.params;
+  const { token } = req.query;
+  const { userId, role } = req.body;
+
+  try {
+    const whiteboard = await Whiteboard.findById(id);
+    if (!whiteboard) return res.status(404).json({ message: "Whiteboard not found" });
+    if (whiteboard.sessionToken !== token) {
+      return res.status(403).json({ message: "Invalid session token" });
+    }
+
+    console.log("collab whiteboard", whiteboard);
+
+    whiteboard.collaborators.push({ userId, role });
+
+    await whiteboard.save();
+    res.json({ message: "Whiteboard updated successfully" });
+
+  } catch (error) {
+    res.status(500).json({ message: "Error adding collaborator", error: error });
+  }
+
+});
+
+router.put("/:id/update-collaborator", authMiddleware, async (req, res) => {
+  const { id } = req.params;
+  const { token } = req.query;
+  const { userId, role } = req.body;
+
+  try {
+    const whiteboard = await Whiteboard.findById(id);
+    if (!whiteboard) return res.status(404).json({ message: "Whiteboard not found" });
+    if (whiteboard.sessionToken !== token) {
+      return res.status(403).json({ message: "Invalid session token" });
+    }
+
+    console.log("collab whiteboard", whiteboard);
+
+    const collaborator = whiteboard.collaborators.find(
+      (collab) => collab.userId.toString() === userId
+    );
+    if (!collaborator) {
+      return res.status(404).json({ message: "Collaborator not found" });
+    }
+    collaborator.role = role;
+    await whiteboard.save();
+
+    res.json({ message: "Whiteboard updated successfully" });
+
+  } catch (error) {
+    res.status(500).json({ message: "Error updating collaborator", error: error });
+  }
+
 });
 
 router.delete("/:id", authMiddleware, async (req, res) => {
@@ -131,6 +198,20 @@ router.put("/:id", authMiddleware, async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 });
+
+router.get("/:id/get-user", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const user = await User.findById(id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.json(user);
+
+  } catch (error) {
+    res.status(500).json({ message: "Error getting Users", error: error });
+  }
+
+})
 
 
 
