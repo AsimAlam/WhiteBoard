@@ -99,17 +99,17 @@ router.put("/:id/add-collaborator", authMiddleware, async (req, res) => {
 
 });
 
-router.put("/:id/update-collaborator", authMiddleware, async (req, res) => {
+router.put("/:id/change-permission", async (req, res) => {
   const { id } = req.params;
-  const { token } = req.query;
+  // const { token } = req.query;
   const { userId, role } = req.body;
 
   try {
     const whiteboard = await Whiteboard.findById(id);
     if (!whiteboard) return res.status(404).json({ message: "Whiteboard not found" });
-    if (whiteboard.sessionToken !== token) {
-      return res.status(403).json({ message: "Invalid session token" });
-    }
+    // if (whiteboard.sessionToken !== token) {
+    //   return res.status(403).json({ message: "Invalid session token" });
+    // }
 
     console.log("collab whiteboard", whiteboard);
 
@@ -122,7 +122,7 @@ router.put("/:id/update-collaborator", authMiddleware, async (req, res) => {
     collaborator.role = role;
     await whiteboard.save();
 
-    res.json({ message: "Whiteboard updated successfully" });
+    res.status(200).json({ message: "Whiteboard updated successfully" });
 
   } catch (error) {
     res.status(500).json({ message: "Error updating collaborator", error: error });
@@ -205,7 +205,7 @@ router.get("/:id/get-user", async (req, res) => {
   try {
     const user = await User.findById(id);
     if (!user) return res.status(404).json({ message: "User not found" });
-    res.json(user);
+    res.status(200).json(user);
 
   } catch (error) {
     res.status(500).json({ message: "Error getting Users", error: error });

@@ -149,14 +149,14 @@ export const _addCollaborator = async (whiteboardId, ownerId, role, userId) => {
     }
 }
 
-export const _updateCollaborator = async (whiteboardId, ownerId, role, userId) => {
+export const _changePermission = async (whiteboardId, role, userId) => {
+    console.log("in api", whiteboardId, role, userId);
     try {
 
-        const response = await fetch(`${config.BACKEND_URL}${config.UPDATE_COLLABORATOR(whiteboardId)}`, {
+        const response = await fetch(`${config.BACKEND_URL}${config.CHANGE_PERMISSION(whiteboardId)}`, {
             method: 'PUT',
             headers: {
-                'Content-Type': 'Application/json',
-                Authorization: ownerId
+                'Content-Type': 'Application/json'
             },
             body: JSON.stringify({ userId: userId, role: role })
         });

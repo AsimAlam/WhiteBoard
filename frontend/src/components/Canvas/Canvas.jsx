@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import CollabProfile from './CollabProfile';
 
 const Toolbar = styled.div`
-  height: 90vh;
+  height: 87vh;
   width: ${(props) => (props.collapsed ? '60px' : '200px')};
   background: ${({ theme }) => theme.toolbar};
   color: ${({ theme }) => theme.text};
@@ -12,6 +13,7 @@ const Toolbar = styled.div`
   align-items: center;
   border-top: 1px solid ${({ theme }) => theme.toolbarHover};
   padding: 10px;
+  position: relative;
 `;
 
 const ToggleButton = styled.button`
@@ -64,7 +66,51 @@ const ColorButton = styled.button`
   cursor: pointer;
 `;
 
-const Canvas = ({ setTool, currentTool, setPenColor, role }) => {
+const DrawerWrapper = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: ${props => props.expanded ? '500px' : '50px'};
+  overflow: hidden;
+  transition: height 1s ease;
+  z-index: 20;
+`;
+
+const ToggleCollaboratorsButton = styled.button`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 8px;
+  background: ${({ theme }) => theme.toolbarHover};
+  color: ${({ theme }) => theme.text};
+  border: none;
+  font-size: 0.8rem;
+  cursor: pointer;
+  z-index: 21;
+  transition: background 0.3s ease;
+  display: flex;
+  justify-content:center;
+  align-Item: center;
+  self-align: center;
+`;
+
+const CollaboratorsContainer = styled.div`
+  position: absolute;
+  bottom: 50px; /* positioned above the toggle button */
+  left: 0;
+  width: 100%;
+  top: 0;
+  overflow-y: auto;
+  background: ${({ theme }) => theme.toolbarHover};
+  transition: transform 1s ease, opacity 1s ease;
+  transform: ${props => props.expanded ? 'translateY(0)' : 'translateY(100%)'};
+  opacity: ${props => props.expanded ? '1' : '0'};
+  z-index: 20;
+`;
+
+const Canvas = ({ setTool, currentTool, setPenColor, role, boardId, collaborators = [], handleChangePermission }) => {
   const [collapsed, setCollapsed] = useState(false);
   const toggleToolbar = () => setCollapsed(!collapsed);
 
@@ -80,9 +126,13 @@ const Canvas = ({ setTool, currentTool, setPenColor, role }) => {
     setPenColor(color);
   };
 
+  const [collabExpanded, setCollabExpanded] = useState(false);
+
   return (
     <Toolbar collapsed={collapsed}>
-      {role === "read" ? "You are in read only mode. Contact the board owner for editing permission." :
+      {role === "read" ? (
+        "You are in read only mode. Contact the board owner for editing permission."
+      ) : (
         <>
           <ToggleButton onClick={toggleToolbar}>
             {collapsed ? '>>' : '<<'}
@@ -120,8 +170,28 @@ const Canvas = ({ setTool, currentTool, setPenColor, role }) => {
             </ColorSelector>
           )}
 
-        </>}
-
+          {boardId !== '' && (
+            <DrawerWrapper expanded={collabExpanded}>
+              <ToggleCollaboratorsButton
+                onClick={() => {
+                  setCollapsed(false);
+                  setCollabExpanded(!collabExpanded);
+                }}>
+                {collabExpanded ? 'Hide Collaborators' : 'Show Collaborators'}
+              </ToggleCollaboratorsButton>
+              <CollaboratorsContainer expanded={collabExpanded}>
+                {collaborators.map((collab) => (
+                  <CollabProfile
+                    key={collab.id}
+                    collab={collab}
+                    handleChangePermission={handleChangePermission}
+                  />
+                ))}
+              </CollaboratorsContainer>
+            </DrawerWrapper>
+          )}
+        </>
+      )}
     </Toolbar>
   );
 };

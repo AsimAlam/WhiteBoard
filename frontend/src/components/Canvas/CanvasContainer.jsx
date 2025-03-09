@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import Canvas from './Canvas';
 import Whiteboard from './Whiteboard';
+import { _changePermission } from '../../api/api';
 
 const lightTheme = {
   body: '#ffffff',
@@ -47,6 +48,13 @@ const CanvasContainer = () => {
   // Manage the pen color; default is black.
   const [penColor, setPenColor] = useState('#000000');
   const [role, setRole] = useState('read');
+  const [boardId, setBoardId] = useState('');
+  const [collaborators, setCollaborators] = useState([]);
+
+  const handleChangePermission = async (id, newPermission) => {
+    const response = await _changePermission(boardId, newPermission, id);
+    return response;
+  }
 
 
   return (
@@ -56,8 +64,11 @@ const CanvasContainer = () => {
         setPenColor={setPenColor}
         currentTool={tool}
         role={role}
+        boardId={boardId}
+        collaborators={collaborators}
+        handleChangePermission={handleChangePermission}
       />
-      <Whiteboard tool={tool} penColor={penColor} lineWidth={2} role={role} setRole={setRole} />
+      <Whiteboard tool={tool} penColor={penColor} lineWidth={2} role={role} setRole={setRole} setBoardId={setBoardId} setCollaborators={setCollaborators} />
     </CanvasWrapper>
   );
 };
