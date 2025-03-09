@@ -141,7 +141,7 @@ const Dashboard = () => {
   const getAllWhiteboard = async () => {
     console.log("user.id", user._id);
     try {
-      const response = await _getAllWhiteboard(user._id);
+      const response = await _getAllWhiteboard(user?._id);
       if (response.status === 401 || response.status === 403) {
         navigate("/login");
         return;
