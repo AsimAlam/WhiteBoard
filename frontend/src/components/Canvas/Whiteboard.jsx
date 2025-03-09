@@ -9,7 +9,7 @@ import { _addCollaborator, _getDashboard, _getWhiteboard, _saveCanvasToDB } from
 const CanvasWrapper = styled.div`
   position: relative;
   width: 100%;
-  height: 500px;
+  height: 90%;
   margin: 1rem;
   background: ${({ theme }) => theme.canvasBg};
   border-radius: 10px;
@@ -53,7 +53,7 @@ const RedoButton = styled.button`
 
 const UPDATE_THROTTLE_MS = 100; // You can adjust this if needed
 
-const Whiteboard = ({ tool, penColor, lineWidth = 2, role, setRole }) => {
+const Whiteboard = ({ tool, penColor, lineWidth = 2, role, setRole, setBoardId, setCollaborators }) => {
   const canvasRef = useRef(null);
   const fabricCanvasRef = useRef(null);
   const socketRef = useRef(null);
@@ -143,6 +143,8 @@ const Whiteboard = ({ tool, penColor, lineWidth = 2, role, setRole }) => {
             setRole(collaborators.role);
           }
         } else {
+          setBoardId(data._id);
+          setCollaborators(data.collaborators);
           setRole('write');
         }
 

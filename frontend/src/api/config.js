@@ -16,7 +16,7 @@ const config = {
     DELETE_BOARD: (whiteboardId) => `/whiteboard/${whiteboardId}`,
     RENAME_BOARD: (whiteboardId) => `/whiteboard/${whiteboardId}`,
     ADD_COLLABORATOR: (whiteboardId) => `/whiteboard/${whiteboardId}/add-collaborator`,
-    UPDATE_COLLABORATOR: (whiteboardId) => `/whiteboard/${whiteboardId}/update-collaborator`,
+    CHANGE_PERMISSION: (whiteboardId) => `/whiteboard/${whiteboardId}/change-permission`,
     GET_USER: (userId) => `/whiteboard/${userId}/get-user`,
 };
 
