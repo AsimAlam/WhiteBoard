@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from "styled-components";
 import { _getUser } from '../../api/api';
+import Avatar from "../../assets/avatars/below-25-boy.svg"
 
 const ProfileContainer = styled.div`
   display: flex;
@@ -46,7 +47,7 @@ const PermissionToggle = styled.button`
 const CollabProfile = ({ collab, handleChangePermission }) => {
     const [permission, setPermission] = useState(collab.role);
     const [user, setUser] = useState(null);
-    const imgSrc = useRef("https://lh3.googleusercontent.com/a/ACg8ocJ9d4PbgPCQr9SICsOg6WyteD5A85hp8VietdyklavQjO-Qf6Y=s96-c");
+    const imgSrc = useRef("");
     // const [imgSrc, setImgSrc] = useState('');
 
     const togglePermission = async () => {
@@ -91,7 +92,7 @@ const CollabProfile = ({ collab, handleChangePermission }) => {
                 alt={`${user?.name}'s photo`}
                 onError={(e) => {
                     console.error("Image failed to load:", e);
-                    e.target.src = 'frontend/src/assets/avatars/below-25-boy.svg';
+                    e.target.src = Avatar;
                 }}
             />
             <ProfileDetails>

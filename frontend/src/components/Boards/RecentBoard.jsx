@@ -8,6 +8,7 @@ import { _deleteWhiteboard, _renameBoard } from "../../api/api";
 import { useUser } from "../../ContextProvider/UserProvider";
 
 const BoardWrapper = styled.div`
+  position: relative; 
   width: 14rem;
   max-height: 200px;
   margin: 1rem;
@@ -22,6 +23,23 @@ const BoardWrapper = styled.div`
   border: 1px solid rgba(0, 0, 0, 0.1);
   background-color: ${({ theme }) => theme.cardBg};
 `;
+
+const Ribbon = styled.div`
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  transform: rotate(-15deg);
+  background: linear-gradient(135deg, #F36F41, #D1503E);
+  color: white;
+  padding: 0.4rem 1rem;
+  font-size: 0.8rem;
+  font-weight: bold;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  z-index: 101;
+`;
+
+
 
 const PreviewBox = styled.div`
   width: 90%;
@@ -163,7 +181,7 @@ const RecentBoard = ({ data, Refresh }) => {
   };
 
   useEffect(() => {
-    // console.log("data in recent", data);
+    // Close dropdown if clicking outside
     const handleClickOutsideDropdown = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowDropdown(false);
@@ -237,6 +255,8 @@ const RecentBoard = ({ data, Refresh }) => {
 
   return (
     <BoardWrapper>
+      {/* Conditionally render the ribbon if the user is the owner */}
+      {data.ownerId === user._id && <Ribbon>Owner</Ribbon>}
       <PreviewBox>
         {data?.pages[0]?.thumbnail ? (
           <img
