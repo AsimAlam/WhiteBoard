@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import CollabProfile from './CollabProfile';
 
@@ -112,21 +112,27 @@ const CollaboratorsContainer = styled.div`
 
 const Canvas = ({ setTool, currentTool, setPenColor, role, boardId, collaborators = [], handleChangePermission }) => {
   const [collapsed, setCollapsed] = useState(false);
-  const toggleToolbar = () => setCollapsed(!collapsed);
+  const [collabExpanded, setCollabExpanded] = useState(false);
+  const penColors = ['#000000', '#FF0000', '#00FF00', '#0000FF'];
+  const [selectedPenColor, setSelectedPenColor] = useState('#000000');
+
+  useEffect(() => {
+    console.log("boardId", boardId);
+  }, [])
+
+  const toggleToolbar = () => {
+    setCollapsed(!collapsed);
+    if (!collapsed) setCollabExpanded(false);
+  };
 
   const handleSelectTool = (tool) => {
     setTool(tool);
   };
 
-  const penColors = ['#000000', '#FF0000', '#00FF00', '#0000FF'];
-  const [selectedPenColor, setSelectedPenColor] = useState('#000000');
-
   const handlePenColorSelect = (color) => {
     setSelectedPenColor(color);
     setPenColor(color);
   };
-
-  const [collabExpanded, setCollabExpanded] = useState(false);
 
   return (
     <Toolbar collapsed={collapsed}>
@@ -170,7 +176,7 @@ const Canvas = ({ setTool, currentTool, setPenColor, role, boardId, collaborator
             </ColorSelector>
           )}
 
-          {boardId !== '' && (
+          {boardId && (
             <DrawerWrapper expanded={collabExpanded}>
               <ToggleCollaboratorsButton
                 onClick={() => {

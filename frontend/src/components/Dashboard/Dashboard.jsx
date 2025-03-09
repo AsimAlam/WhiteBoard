@@ -112,7 +112,7 @@ const Dashboard = () => {
   const { user, setUser } = useUser();
   const [allWhiteboard, setAllWhiteboard] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortOption, setSortOption] = useState("");
+  const [sortOption, setSortOption] = useState("timestamp-desc");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const navigate = useNavigate();
@@ -181,11 +181,10 @@ const Dashboard = () => {
   }
 
   const sortOptions = [
-    { value: "", label: "Sort By" },
     { value: "name-asc", label: "Name Ascending" },
     { value: "name-desc", label: "Name Descending" },
-    { value: "timestamp-asc", label: "Timestamp Ascending" },
-    { value: "timestamp-desc", label: "Timestamp Descending" },
+    { value: "timestamp-asc", label: "Least Recent" },
+    { value: "timestamp-desc", label: "Most Recent" },
   ];
 
   const toggleDropdown = () => {
@@ -210,7 +209,7 @@ const Dashboard = () => {
   }, []);
 
   const selectedLabel =
-    sortOptions.find(opt => opt.value === sortOption)?.label || "Sort By";
+    sortOptions.find(opt => opt.value === sortOption)?.label || "Most Recent";
 
   return (
     <DashboardWrapper>

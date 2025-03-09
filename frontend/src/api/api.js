@@ -128,10 +128,10 @@ export const _renameBoard = async (whiteboardId, userId, name) => {
     }
 }
 
-export const _addCollaborator = async (whiteboardId, ownerId, role, userId) => {
+export const _addCollaborator = async (whiteboardId, sessionToken, ownerId, role, userId) => {
     try {
 
-        const response = await fetch(`${config.BACKEND_URL}${config.ADD_COLLABORATOR(whiteboardId)}`, {
+        const response = await fetch(`${config.BACKEND_URL}${config.ADD_COLLABORATOR(whiteboardId)}?token=${sessionToken}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'Application/json',

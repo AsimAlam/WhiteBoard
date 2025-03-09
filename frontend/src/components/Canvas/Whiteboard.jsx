@@ -136,13 +136,15 @@ const Whiteboard = ({ tool, penColor, lineWidth = 2, role, setRole, setBoardId, 
 
         if (data.ownerId !== user._id) {
           const collaborators = data.collaborators.find(collab => collab.userId === user._id);
+          console.log("collaborator", collaborators, data, user);
           if (!collaborators) {
-            await _addCollaborator(data._id, data.ownerId, 'read', user._id);
+            await _addCollaborator(data._id, data.sessionToken, data.ownerId, 'read', user._id);
           } else {
             console.log("role", collaborators.role);
             setRole(collaborators.role);
           }
         } else {
+          console.log("inside owner", data, user);
           setBoardId(data._id);
           setCollaborators(data.collaborators);
           setRole('write');
