@@ -115,10 +115,13 @@ const Canvas = ({ setTool, currentTool, setPenColor, role, boardId, collaborator
   const [collabExpanded, setCollabExpanded] = useState(false);
   const penColors = ['#000000', '#FF0000', '#00FF00', '#0000FF'];
   const [selectedPenColor, setSelectedPenColor] = useState('#000000');
+  const [currRole, setCurrRole] = useState(role);
 
   useEffect(() => {
-    console.log("boardId", boardId);
-  }, [])
+    console.log("role props", role);
+    setCurrRole(role);
+    setTool('select');
+  }, [role]);
 
   const toggleToolbar = () => {
     setCollapsed(!collapsed);
@@ -136,7 +139,7 @@ const Canvas = ({ setTool, currentTool, setPenColor, role, boardId, collaborator
 
   return (
     <Toolbar collapsed={collapsed}>
-      {role === "read" ? (
+      {currRole === "read" ? (
         "You are in read only mode. Contact the board owner for editing permission."
       ) : (
         <>

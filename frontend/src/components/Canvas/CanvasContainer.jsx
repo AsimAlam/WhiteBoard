@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Canvas from './Canvas';
 import Whiteboard from './Whiteboard';
 import { _changePermission } from '../../api/api';
+import { io } from 'socket.io-client';
 
 const lightTheme = {
   body: '#ffffff',
@@ -50,8 +51,13 @@ const CanvasContainer = () => {
   const [role, setRole] = useState('read');
   const [boardId, setBoardId] = useState('');
   const [collaborators, setCollaborators] = useState([]);
+  const socketRef = useRef(null);
+  const [currUser, setCurrUser] = useState('');
 
   const handleChangePermission = async (id, newPermission) => {
+    setCurrUser(id);
+    socketRef.current = io("http://localhost:5000");
+    socketRef.current.emit("permission-change", { boardId: boardId, Permission: newPermission, userId: id });
     const response = await _changePermission(boardId, newPermission, id);
     return response;
   }
@@ -68,7 +74,7 @@ const CanvasContainer = () => {
         collaborators={collaborators}
         handleChangePermission={handleChangePermission}
       />
-      <Whiteboard tool={tool} penColor={penColor} lineWidth={2} role={role} setRole={setRole} setBoardId={setBoardId} setCollaborators={setCollaborators} />
+      <Whiteboard tool={tool} penColor={penColor} lineWidth={2} Userrole={role} setRole={setRole} setBoardId={setBoardId} setCollaborators={setCollaborators} />
     </CanvasWrapper>
   );
 };
