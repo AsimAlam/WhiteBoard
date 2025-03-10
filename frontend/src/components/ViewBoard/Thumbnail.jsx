@@ -3,7 +3,6 @@ import { Document, Page, pdfjs } from 'react-pdf';
 import { jsPDF } from 'jspdf';
 import styled, { ThemeContext, ThemeProvider, useTheme } from 'styled-components';
 
-// Make sure this worker file is correctly placed in your public folder.
 pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
 
 const ThumbnailWrapper = styled.div`

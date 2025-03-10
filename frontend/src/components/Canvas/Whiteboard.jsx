@@ -53,7 +53,7 @@ const RedoButton = styled.button`
 
 const UPDATE_THROTTLE_MS = 100; // You can adjust this if needed
 
-const Whiteboard = ({ tool, penColor, lineWidth = 2, role, setRole, setBoardId, setCollaborators }) => {
+const Whiteboard = ({ tool, penColor, lineWidth = 2, Userrole, setRole, setBoardId, setCollaborators }) => {
   const canvasRef = useRef(null);
   const fabricCanvasRef = useRef(null);
   const socketRef = useRef(null);
@@ -189,6 +189,14 @@ const Whiteboard = ({ tool, penColor, lineWidth = 2, role, setRole, setBoardId, 
   useEffect(() => {
     socketRef.current = io("http://localhost:5000");
     socketRef.current.emit("join-board", id);
+
+    socketRef.current.on("permission-change", (data) => {
+      if (data.boardId !== id) return;
+      if (user && data.userId !== user._id) return;
+
+      setRole(data.Permission);
+
+    })
 
     socketRef.current.on("canvas-update", (data) => {
       // Only process if the board id matches.
@@ -350,7 +358,7 @@ const Whiteboard = ({ tool, penColor, lineWidth = 2, role, setRole, setBoardId, 
         saveState(canvas);
         emitCanvasUpdate(canvas);
       });
-    } else if (tool === 'select') {
+    } else if (tool === 'select' && Userrole === "write") {
       canvas.isDrawingMode = false;
       canvas.selection = true;
       canvas.getObjects().forEach((obj) => (obj.selectable = true));
@@ -389,6 +397,10 @@ const Whiteboard = ({ tool, penColor, lineWidth = 2, role, setRole, setBoardId, 
   };
 
   const saveCanvasState = async () => {
+    if(Userrole === "read"){
+      console.log("ask for permission");
+      return;
+    }
     const canvas = fabricCanvasRef.current;
     if (!canvas) return;
     const json = canvas.toJSON();
@@ -409,7 +421,10 @@ const Whiteboard = ({ tool, penColor, lineWidth = 2, role, setRole, setBoardId, 
     return json;
   };
 
+
   return (
+
+
     <CanvasWrapper>
       <RedoButton onClick={redo}>Redo</RedoButton>
       <UndoButton onClick={undo}>Undo</UndoButton>

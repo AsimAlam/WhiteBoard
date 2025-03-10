@@ -171,7 +171,12 @@ const Navbar = () => {
         </ToggleButton>
         <AvatarContainer>
           <Avatar onClick={handleAvatarClick}>
-            <AvatarImg src={profileUrl} alt="Avatar" />
+            <AvatarImg src={user.profilePic} alt="Avatar"
+              onError={(e) => {
+                console.error("Image failed to load:", e);
+                e.target.src = AvatarImage;
+              }}
+            />
           </Avatar>
           {showDropdown && (
             <DropdownContainer ref={dropdownRef}>

@@ -10,18 +10,12 @@ const AddBoardsWrapper = styled.div`
     max-height: 200px;
     margin: 1rem;
     border-radius: 10px;
-    padding: 1rem;
+    padding: 1rem 1rem 0 1rem;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
     transition: transform 0.2s ease-in-out;
-    // &:hover {
-    //     transform: scale(1.05);
-    // }
-    // &:active {
-    //     transform: scale(0.98);
-    // };
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
     border: 1px solid rgba(0, 0, 0, 0.1);
     background-color: ${({ theme }) => theme.cardBg};
@@ -35,7 +29,6 @@ const AddBox = styled.div`
     justify-content: center;
     align-items: center;
     background-color: ${({ theme }) => theme.cardPreview};
-    margin-bottom: 1rem;
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 10px;
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
@@ -62,7 +55,7 @@ const AddText = styled.div`
     color: ${({ theme }) => theme.text};
     font-size: 1.2rem;
     font-weight: bold;
-    margin-top: 1rem;
+    // margin-top: 1rem;
     user-select: none;
     text-align: center;
     width: 100%;

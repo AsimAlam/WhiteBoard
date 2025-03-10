@@ -36,6 +36,18 @@ io.on("connection", (socket) => {
     socket.on("disconnect", () => {
         console.log("User disconnected:", socket.id);
     });
+
+    // socket.on("register", (userId) => {
+    //     socket.join(userId);
+    //     console.log(`User ${userId} joined their personal room`);
+    // });
+
+    socket.on("permission-change", (data) => {
+        console.log("permission", data);
+        // Emit only to the target user's room
+        socket.to(data.boardId).emit("permission-change", data);
+    });
+
 });
 
 // Load routes
