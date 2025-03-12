@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import styled from "styled-components";
 import { _getUser } from '../../api/api';
 import Avatar from "../../assets/avatars/below-25-boy.svg"
+import toast from 'react-hot-toast';
 
 const ProfileContainer = styled.div`
   display: flex;
@@ -66,6 +67,8 @@ const CollabProfile = ({ collab, handleChangePermission }) => {
             console.log("user", result);
             if (response.status === 200) {
                 setUser(result);
+            }else{
+                toast.error("Unable to fetch Collaborator. Please Refersh!");
             }
         } catch (error) {
             console.error("Failed to fetch user details", error);

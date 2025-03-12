@@ -1,6 +1,6 @@
 const express = require("express");
 const Whiteboard = require("../models/Whiteboard");
-const Drawing = require("../models/Drawing");
+const NoteSchema = require("../models/NoteSchema");
 const validateSessionToken = require("../middleware/validateSessionToken");
 const checkRole = require("../middleware/checkRole");
 const { v4: uuidv4 } = require("uuid");
@@ -211,7 +211,44 @@ router.get("/:id/get-user", async (req, res) => {
     res.status(500).json({ message: "Error getting Users", error: error });
   }
 
-})
+});
+
+router.get("/:id/get-notes", async (req, res) => {
+
+  const { id } = req.params;
+
+  try {
+    const notes = await NoteSchema.find({ whiteboardId: id });
+    console.log("notes", notes);
+    res.status(200).json(notes);
+  } catch (error) {
+    res.status(500).json({ message: "Error getting Notes", error: error });
+  }
+});
+
+router.put("/:id/update-notes", authMiddleware, async (req, res) => {
+  const { id } = req.params;
+  const { content } = req.body;
+
+  try {
+    let note = await NoteSchema.findOne({ whiteboardId: id });
+
+    if (note) {
+      note.content = content;
+      note = await note.save();
+      return res.status(200).json(note);
+    } else {
+      note = await NoteSchema.create({
+        whiteboardId: id,
+        content
+      });
+      return res.status(201).json(note);
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Error updating or creating note", error: error.message });
+  }
+});
+
 
 
 

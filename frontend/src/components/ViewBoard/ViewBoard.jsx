@@ -2,8 +2,11 @@ import styled from "styled-components";
 import Thumbnail from "./Thumbnail";
 import BoardDetails from "./BoardDetails";
 import BoardOperations from "./BoardOperations";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useRef } from "react";
+import { _getDashboard } from "../../api/api";
+import { useUser } from "../../ContextProvider/UserProvider";
+import toast from "react-hot-toast";
 
 const ViewBoardWrapper = styled.div`
     height: 90vh;
@@ -32,7 +35,23 @@ const DetailWrapper = styled.div`
 const ViewBoard = () => {
 
     const Location = useLocation();
-    const { boardData } = Location.state;
+    const navigate = useNavigate();
+
+    const boardData = Location?.state?.boardData;
+
+    useEffect(() => {
+        console.log("inside", boardData);
+        if (!boardData) {
+            toast.error("No board data found. Redirecting to dashboard.");
+            navigate("/dashboard");
+        }
+    }, [boardData, navigate]);
+
+    useEffect(() => {
+        if (!boardData) {
+            navigate("/dashboard");
+        }
+    }, []);
 
     const data = useRef(boardData);
 
@@ -47,7 +66,7 @@ const ViewBoard = () => {
                 <Thumbnail data={data.current} />
             </ThumbnailContainer>
             <DetailWrapper>
-                <BoardDetails name="TimeStamp/Name" notes="lorem imsum" />
+                <BoardDetails boardData={data.current} />
                 <BoardOperations boardData={data.current} />
             </DetailWrapper>
         </ViewBoardWrapper>

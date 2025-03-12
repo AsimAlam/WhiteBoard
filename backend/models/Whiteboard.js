@@ -16,7 +16,7 @@ const WhiteboardSchema = new mongoose.Schema({
     ownerId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     pages: [PageSchema],
     collaborators: [CollaboratorSchema],
-    sessionToken: { type: String }, // Unique token used for secure session links
+    sessionToken: { type: String },
     createdAt: { type: Date, default: Date.now }
 });
 

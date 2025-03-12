@@ -4,6 +4,7 @@ import Canvas from './Canvas';
 import Whiteboard from './Whiteboard';
 import { _changePermission } from '../../api/api';
 import { io } from 'socket.io-client';
+import toast from 'react-hot-toast';
 
 const lightTheme = {
   body: '#ffffff',
@@ -59,6 +60,7 @@ const CanvasContainer = () => {
     socketRef.current = io("http://localhost:5000");
     socketRef.current.emit("permission-change", { boardId: boardId, Permission: newPermission, userId: id });
     const response = await _changePermission(boardId, newPermission, id);
+    newPermission === "write" ? toast.success("Permission Granted.") : toast.success("Permission Revoked");
     return response;
   }
 

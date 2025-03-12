@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { jsPDF } from 'jspdf';
 import styled, { ThemeContext, ThemeProvider, useTheme } from 'styled-components';
+import toast from 'react-hot-toast';
 
 pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
 
@@ -21,7 +22,7 @@ const Thumbnail = ({ data }) => {
     const theme = useTheme();
 
     useEffect(() => {
-        if (data && data.pages && data.pages.length > 0) {
+        if (data && data?.pages && data?.pages.length > 0) {
             const imageData = data.pages[0].thumbnail;
             if (imageData && imageData.startsWith('data:image/png')) {
                 try {
@@ -40,13 +41,16 @@ const Thumbnail = ({ data }) => {
 
                     setPdfDataUrl(generatedPdfDataUrl);
                 } catch (err) {
+                    toast.error("Unable to Load PDF");
                     console.error("Error generating PDF:", err);
                     setError("Error generating PDF: " + err.toString());
                 }
             } else {
+                toast.error("No PDF! Try Saving Canvas First");
                 setError("Invalid or missing thumbnail image data.");
             }
         } else {
+            toast.error("No PDF! Try Saving Canvas First");
             setError("No page data available.");
         }
     }, [data]);

@@ -6,6 +6,7 @@ import { MdOpenInNew } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { _deleteWhiteboard, _renameBoard } from "../../api/api";
 import { useUser } from "../../ContextProvider/UserProvider";
+import toast from "react-hot-toast";
 
 const BoardWrapper = styled.div`
   position: relative;
@@ -189,9 +190,12 @@ const RecentBoard = ({ data, Refresh }) => {
       const response = await _deleteWhiteboard(data._id, user._id);
       console.log("delete response", response);
       if (response.status === 401 || response.status === 403) {
+        toast.error("Please Login First");
+        localStorage.removeItem('user');
         navigate("/login");
         return;
       } else if (response.status === 200) {
+        toast.success("Board Deleted Successfully");
         Refresh();
       }
     } catch (error) {
@@ -204,9 +208,12 @@ const RecentBoard = ({ data, Refresh }) => {
     try {
       const response = await _renameBoard(data._id, user._id, editedName);
       if (response.status === 401 || response.status === 403) {
+        toast.error("Please Login First");
+        localStorage.removeItem('user');
         navigate("/login");
         return;
       } else if (response.status === 200) {
+        toast.success("Name Updated Successfully");
         setIsEditing(false);
         Refresh();
       }

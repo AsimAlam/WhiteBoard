@@ -7,6 +7,7 @@ import { useTheme } from "../../ContextProvider/ThemeProvider";
 import { ReactComponent as LogoImage } from "../../assets/logo.svg";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../ContextProvider/UserProvider";
+import { _logout } from "../../api/api";
 
 const NavbarWrapper = styled.div`
   height: 10vh;
@@ -152,9 +153,16 @@ const Navbar = () => {
       document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    console.log("inside logout");
     setUser({});
-    navigate("/login");
+    localStorage.removeItem('user');
+    console.log("user logout", user);
+    const response = await _logout();
+    if (response.status === 200) {
+      navigate("/");
+    }
+    console.log("logout", response);
   }
 
   return (

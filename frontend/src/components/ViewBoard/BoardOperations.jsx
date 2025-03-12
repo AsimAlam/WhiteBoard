@@ -4,6 +4,7 @@ import { FaFileDownload } from "react-icons/fa";
 import { RiDownloadCloudLine } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 import { jsPDF } from "jspdf";
+import toast from "react-hot-toast";
 
 
 const BoardOperationsWrapper = styled.div`
@@ -30,6 +31,7 @@ const BoardOperations = ({ boardData }) => {
     const downloadPdf = () => {
         const page = boardData.pages && boardData.pages[0];
         if (!page || !page.thumbnail) {
+            toast.error("No thumbnail available");
             console.error("No thumbnail available");
             return;
         }
@@ -48,8 +50,10 @@ const BoardOperations = ({ boardData }) => {
             });
             doc.addImage(imageData, 'PNG', 0, 0, originalWidth, originalHeight);
             doc.save('whiteboard.pdf');
+            toast.success("Pdf Downloaded Successfully");
         };
         img.onerror = () => {
+            toast.error("Failed to Download Pdf");
             console.error("Failed to load image");
         };
     };
@@ -57,6 +61,7 @@ const BoardOperations = ({ boardData }) => {
     const downloadImage = () => {
         const page = boardData.pages && boardData.pages[0];
         if (!page || !page.thumbnail) {
+            toast.error("No thumbnail available");
             console.error("No thumbnail available");
             return;
         }
@@ -66,6 +71,7 @@ const BoardOperations = ({ boardData }) => {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        toast.success("Image Downloaded Successfully");
     };
 
     return (
