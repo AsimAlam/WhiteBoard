@@ -6,6 +6,7 @@ import RecentBoard from '../Boards/RecentBoard';
 import { useUser } from '../../ContextProvider/UserProvider';
 import { useNavigate } from 'react-router-dom';
 import { FaSearch, FaSortAmountUp } from 'react-icons/fa';
+import toast from 'react-hot-toast';
 
 const fadeIn = keyframes`
   from {
@@ -126,7 +127,7 @@ const Dashboard = () => {
       // console.log("data", data?.data);
       // console.log("uri", encodeURIComponent(window.location.href), window.location.href);
       if (data?.data) {
-        // console.log("data parse", JSON.stringify(data.data));
+        console.log("data parse", JSON.stringify(data.data));
         localStorage.setItem('user', JSON.stringify(data.data));
         setUser(data?.data);
       }
@@ -134,15 +135,20 @@ const Dashboard = () => {
         navigate(`${encodeURIComponent(window.location.href)}`);
       }
     } else {
+      setUser({});
+      localStorage.removeItem('user');
       navigate("/login");
+      toast.error("Please Login First");
     }
   };
 
   const getAllWhiteboard = async () => {
-    console.log("user.id", user._id);
+    console.log("user.id", user?._id);
     try {
       const response = await _getAllWhiteboard(user?._id);
       if (response.status === 401 || response.status === 403) {
+        toast.error("Please Login First");
+        localStorage.removeItem('user');
         navigate("/login");
         return;
       }
@@ -242,7 +248,7 @@ const Dashboard = () => {
       <DashboardBody>
         <NewBoard />
         {filteredBoards.map((board, index) => (
-          <RecentBoard key={board._id || index} data={board} Refresh={Refresh} />
+          <RecentBoard key={board?._id || index} data={board} Refresh={Refresh} />
         ))}
       </DashboardBody>
     </DashboardWrapper>

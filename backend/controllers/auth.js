@@ -45,9 +45,10 @@ router.get("/login", (req, res) => {
 
 // Logout Route (Fixed)
 router.get("/logout", (req, res, next) => {
+    console.log("inside logount");
     req.logout((err) => {
         if (err) return next(err);
-        res.redirect("/");
+        res.status(200).json({ message: "Logged out successfully" });
     });
 });
 

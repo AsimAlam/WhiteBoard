@@ -30,6 +30,20 @@ export const _loginWithGoogle = async (boardId, token, userId, canvasJSON) => {
     window.location.href = `${config.BACKEND_URL}${config.GOOGLE_AUTH_URL}`;
 };
 
+export const _logout = async () => {
+    try {
+        const response = await fetch(`${config.BACKEND_URL}${config.LOGOUT}`, {
+            method: 'GET',
+            credentials: 'include',
+        });
+
+        return response;
+
+    } catch (error) {
+        return error;
+    }
+};
+
 export const _saveCanvasToDB = async (whiteboardId, canvasJSON, thumbnail, userId, token) => {
     try {
         const response = await fetch(
@@ -178,6 +192,42 @@ export const _getUser = async (userId) => {
                 'Content-Type': 'Application/json'
             }
         });
+
+        return response;
+
+    } catch (error) {
+        return error;
+    }
+}
+
+export const _getNotes = async (whiteboardId) => {
+    try {
+        const response = await fetch(`${config.BACKEND_URL}${config.GET_NOTES(whiteboardId)}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'Application/json'
+            }
+        });
+
+        return response;
+
+    } catch (error) {
+        return error;
+    }
+}
+
+export const _updateNotes = async (whiteboardId, data, userId) => {
+    try {
+        const response = await fetch(`${config.BACKEND_URL}${config.UPDATE_NOTES(whiteboardId)}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'Application/json',
+                Authorization: userId
+            },
+            body: JSON.stringify({ content: data })
+        });
+
+        console.log("update res", response);
 
         return response;
 

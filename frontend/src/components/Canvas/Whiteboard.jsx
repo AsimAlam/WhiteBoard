@@ -5,6 +5,7 @@ import styled, { useTheme } from 'styled-components';
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { useUser } from "../../ContextProvider/UserProvider";
 import { _addCollaborator, _getDashboard, _getWhiteboard, _saveCanvasToDB } from '../../api/api';
+import { toast } from "react-hot-toast";
 
 const CanvasWrapper = styled.div`
   position: relative;
@@ -108,23 +109,30 @@ const Whiteboard = ({ tool, penColor, lineWidth = 2, Userrole, setRole, setBoard
     if (!user || Object.keys(user).length === 0) {
       (async () => {
         const response = await _getDashboard();
+        console.log("getdashboard", response);
         const data = await response?.json();
+        console.log("whiteboard", data);
         if (data.message === 'Unauthorized') {
+          toast.error("Please Login First");
           navigate(`/login?redirect=${encodeURIComponent(window.location.href)}`);
         } else {
+          console.log("Data", data?.data);
           setUser(data?.data);
         }
       })();
     }
-  }, [user, navigate, setUser]);
+  }, [navigate]);
 
   // Fetch saved whiteboard data.
   useEffect(() => {
-    if (!user) return;
+    if (!user || Object.keys(user).length === 0) return;
     const fetchWhiteboard = async () => {
       try {
         const response = await _getWhiteboard(id, user._id)
-        if (response.status === 401 || response.status === 403) {
+        console.log("getWhiteboard", response, id, user._id);
+        if (response.status === 401 || response.status === 403 || response.status === 400) {
+          toast.error("Please Login First");
+          localStorage.removeItem('user');
           navigate("/login");
           return;
         }
@@ -151,11 +159,12 @@ const Whiteboard = ({ tool, penColor, lineWidth = 2, Userrole, setRole, setBoard
         }
 
       } catch (error) {
+        toast.error("Unable to Fetch Whiteboard. Please try again.")
         console.error("Error fetching whiteboard:", error);
       }
     };
     fetchWhiteboard();
-  }, [id, sessionToken, user, navigate]);
+  }, [id, sessionToken, user]);
 
   // Initialize Fabric canvas.
   useEffect(() => {
@@ -193,6 +202,8 @@ const Whiteboard = ({ tool, penColor, lineWidth = 2, Userrole, setRole, setBoard
     socketRef.current.on("permission-change", (data) => {
       if (data.boardId !== id) return;
       if (user && data.userId !== user._id) return;
+
+      toast.success("Permission Updated");
 
       setRole(data.Permission);
 
@@ -397,8 +408,8 @@ const Whiteboard = ({ tool, penColor, lineWidth = 2, Userrole, setRole, setBoard
   };
 
   const saveCanvasState = async () => {
-    if(Userrole === "read"){
-      console.log("ask for permission");
+    if (Userrole === "read") {
+      toast.error("Ask for Permission");
       return;
     }
     const canvas = fabricCanvasRef.current;
@@ -412,6 +423,8 @@ const Whiteboard = ({ tool, penColor, lineWidth = 2, Userrole, setRole, setBoard
     const response = await _saveCanvasToDB(id, json, thumbnail, user._id, sessionToken);
 
     if (response.status === 401 || response.status === 403) {
+      toast.error("Please Login First");
+      localStorage.removeItem('user');
       navigate("/login");
       return;
     }

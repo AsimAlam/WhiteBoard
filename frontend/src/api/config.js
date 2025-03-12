@@ -9,6 +9,7 @@ const config = {
     BACKEND_URL: "http://localhost:5000",
     GOOGLE_AUTH_URL: `/auth/google?redirect=${encodeURIComponent(redirectParam)}`,
     DASHBOARD_URL: "/auth/dashboard",
+    LOGOUT: "/auth/logout",
     CREATE_BOARD_URL: "/whiteboard/create",
     SAVE_DRAWING: (whiteboardId) => `/whiteboard/${whiteboardId}/save-drawing`,
     GET_DRAWING: (whiteboardId) => `/whiteboard/${whiteboardId}`,
@@ -18,6 +19,8 @@ const config = {
     ADD_COLLABORATOR: (whiteboardId) => `/whiteboard/${whiteboardId}/add-collaborator`,
     CHANGE_PERMISSION: (whiteboardId) => `/whiteboard/${whiteboardId}/change-permission`,
     GET_USER: (userId) => `/whiteboard/${userId}/get-user`,
+    GET_NOTES: (whiteboardId) => `/whiteboard/${whiteboardId}/get-notes`,
+    UPDATE_NOTES: (whiteboardId) => `/whiteboard/${whiteboardId}/update-notes`,
 };
 
 export default config;

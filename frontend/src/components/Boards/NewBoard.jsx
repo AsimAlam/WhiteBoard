@@ -4,6 +4,7 @@ import { ReactComponent as AddIcon } from "../../assets/addIcon.svg";
 import { useUser } from "../../ContextProvider/UserProvider";
 import { useNavigate } from "react-router-dom";
 import { _createNewBoard } from "../../api/api";
+import toast from "react-hot-toast";
 
 const AddBoardsWrapper = styled.div`
     width: 14rem;
@@ -80,8 +81,10 @@ const NewBoard = () => {
             // Construct the unique URL for the new whiteboard
             const boardUrl = `/whiteboard/${_id}?token=${sessionToken}`;
             // Navigate to the new whiteboard page
+            toast.success("Welcome to Your New Board");
             navigate(boardUrl);
         } catch (error) {
+            toast.error("Unable to create New Board.")
             console.error("Error creating new board:", error);
         }
     }

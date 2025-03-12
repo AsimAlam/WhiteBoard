@@ -22,6 +22,11 @@ export const lightTheme = {
     lineBorder: "#0000001A",
     searchIcon: "#000000",
     sortByColor: "#000000",
+    notesBg: "#f9f9f9",
+    saveButtonBg: "#6EBB3B",
+    cancleButtonBg: "#C51E1D",
+    successHover: "#18510A",
+    cancleHover: "#793636",
 };
 
 export const darkTheme = {
@@ -48,4 +53,9 @@ export const darkTheme = {
     lineBorder: "#C6C6C6",
     searchIcon: "#B7B7B7",
     sortByColor: "#BCBCBC",
+    notesBg: "#0D0C0E",
+    saveButtonBg: "#6EBB3B",
+    cancleButtonBg: "#C51E1D",
+    successHover: "#18510A",
+    cancleHover: "#793636",
 };
