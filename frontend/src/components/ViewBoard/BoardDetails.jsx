@@ -64,11 +64,13 @@ const BoardParagraph = styled.p`
 `;
 
 const BoardTextarea = styled.textarea`
+    max-width: 90%;
     width: 90%;
     height: 60%;
     font-size: 1rem;
     padding: 0 0.5rem 0.5rem 0.5rem;
     margin-bottom: 1rem;
+    margin-right: 2rem;
     border: 1px solid ${({ theme }) => theme.primary};
     border-radius: 8px;
     background: ${({ theme }) => theme.notesBg};
@@ -165,7 +167,7 @@ const BoardDetails = ({ boardData }) => {
                 <NotesHeading>
                     <BoardSpan>Notes:</BoardSpan>
                     {boardData?.ownerId === user?._id && (
-                        <GrEdit onClick={() => setIsEditing(true)} />
+                        <GrEdit style={{ cursor: "pointer" }} onClick={() => setIsEditing(true)} />
                     )}
 
                 </NotesHeading>
