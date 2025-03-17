@@ -8,13 +8,13 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID, // from your .env file
       clientSecret: process.env.GOOGLE_CLIENT_SECRET, // from your .env file
-      callbackURL: "/auth/google/callback", // URL to handle callback
+      callbackURL: "https://whiteboard-backend-sfp3.onrender.com/auth/google/callback", // URL to handle callback
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
         // Extract data from profile
         const { id, displayName, emails, photos } = profile;
-        
+
         // Find an existing user or create a new one
         let user = await User.findOne({ googleId: id });
         if (!user) {
