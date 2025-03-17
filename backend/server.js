@@ -12,22 +12,20 @@ const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: "https://whiteboard-frontend-zb1b.onrender.com", // Your frontend URL
+    credentials: true,
+}));
 
 app.use(session({
     secret: "your-secret-key",  // Use a strong secret
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: true,       // Must be true for HTTPS
-        httpOnly: true,     // Prevent client-side access
-        sameSite: "None",   // Required for cross-origin cookies
+        httpOnly: true,
+        sameSite: "None",   // Allows cross-origin requests
+        secure: process.env.NODE_ENV === "production" || process.env.RENDER,  // Set secure only in production
     },
-}));
-
-app.use(cors({
-    origin: 'https://whiteboard-frontend-zb1b.onrender.com',
-    credentials: true,
 }));
 
 mongoose.connect(process.env.MONGO_URI, {
