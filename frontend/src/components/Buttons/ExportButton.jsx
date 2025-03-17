@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 const ButtonWrapper = styled.div`
     padding: 10px;
-    height: 50px;
+    height: 20px;
     margin: 10px;
     border-radius: 5px;
     background-color: ${({ theme }) => theme.buttonBg};
@@ -18,7 +18,7 @@ const ButtonWrapper = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1rem;
+    font-size: 1.2rem;
     font-weight: bold;
     user-select: none;
     text-align: center;
@@ -26,9 +26,9 @@ const ButtonWrapper = styled.div`
 
 const ExportButton = (data) => {
     return (
-        <ButtonWrapper onClick={data.onClick}>
+        <ButtonWrapper onClick={data.onClick} title={data.title}>
             {data.icon}
-            {data.data}
+            {/* {data.data} */}
         </ButtonWrapper>
     );
 };

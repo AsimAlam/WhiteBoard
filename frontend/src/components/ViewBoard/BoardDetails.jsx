@@ -4,13 +4,23 @@ import { useEffect, useState } from "react";
 import { _getNotes, _updateNotes } from "../../api/api";
 import toast from "react-hot-toast";
 import { GrEdit } from "react-icons/gr";
+import BoardOperations from "./BoardOperations";
 
 const BoardDetailsWrapper = styled.div`
-    height: 70%;
+    height: 90%;
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
+`;
+
+const BoardTitle = styled.div`
+    width: 95%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    // background-color: yellow;
+    // padding: 0rem 0rem 0rem 1.5rem;
 `;
 
 const BoardName = styled.div`
@@ -20,6 +30,10 @@ const BoardName = styled.div`
     margin: 1rem;
     user-select: none;
     padding: 1rem;
+    width: 40%;
+    display: flex;
+    justify-content: flex-start;
+    // background-color: blue;
 `;
 
 const BoardNotes = styled.div`
@@ -162,7 +176,10 @@ const BoardDetails = ({ boardData }) => {
 
     return (
         <BoardDetailsWrapper>
-            <BoardName>{boardData?.name}</BoardName>
+            <BoardTitle>
+                <BoardName>{boardData?.name}</BoardName>
+                <BoardOperations boardData={boardData} />
+            </BoardTitle>
             <BoardNotes>
                 <NotesHeading>
                     <BoardSpan>Notes:</BoardSpan>
