@@ -57,7 +57,7 @@ const CanvasContainer = () => {
 
   const handleChangePermission = async (id, newPermission) => {
     setCurrUser(id);
-    socketRef.current = io("http://localhost:5000");
+    socketRef.current = io("https://whiteboard-backend-sfp3.onrender.com");
     socketRef.current.emit("permission-change", { boardId: boardId, Permission: newPermission, userId: id });
     const response = await _changePermission(boardId, newPermission, id);
     newPermission === "write" ? toast.success("Permission Granted.") : toast.success("Permission Revoked");
