@@ -2,19 +2,21 @@ import styled from "styled-components";
 import ExportButton from "../Buttons/ExportButton";
 import { FaFileDownload } from "react-icons/fa";
 import { RiDownloadCloudLine } from "react-icons/ri";
+import { TiArrowRepeat } from "react-icons/ti";
 import { useNavigate } from "react-router-dom";
 import { jsPDF } from "jspdf";
 import toast from "react-hot-toast";
 
 
 const BoardOperationsWrapper = styled.div`
-    height: 30%;
-    width: 100%;
-    border-top: 1px solid ${({ theme }) => theme.lineBorder};
+    width: 60%;
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
-    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: center;
+    // flex-wrap: wrap;
+    // background-color: red;
+
 `;
 
 const BoardOperations = ({ boardData }) => {
@@ -76,9 +78,9 @@ const BoardOperations = ({ boardData }) => {
 
     return (
         <BoardOperationsWrapper>
-            <ExportButton data="Copy to Canvas" onClick={handleRedirect} />
-            <ExportButton data="Download Pdf" icon={<FaFileDownload />} onClick={downloadPdf} />
-            <ExportButton data="Download Image" icon={<RiDownloadCloudLine />} onClick={downloadImage} />
+            <ExportButton title="Copy to Canvas" icon={<TiArrowRepeat />} onClick={handleRedirect} />
+            <ExportButton title="Download Pdf" icon={<FaFileDownload />} onClick={downloadPdf} />
+            <ExportButton title="Download Image" icon={<RiDownloadCloudLine />} onClick={downloadImage} />
         </BoardOperationsWrapper>
     );
 };

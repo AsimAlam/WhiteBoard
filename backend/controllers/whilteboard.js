@@ -88,10 +88,22 @@ router.put("/:id/add-collaborator", authMiddleware, async (req, res) => {
 
     console.log("collab whiteboard", whiteboard);
 
-    whiteboard.collaborators.push({ userId, role });
+    const existing = whiteboard.collaborators.find(collab =>
+      collab.userId.toString() === userId
+    );
 
-    await whiteboard.save();
-    res.json({ message: "Whiteboard updated successfully" });
+    if (existing) {
+      if (existing.role !== role) {
+        existing.role = role;
+        await whiteboard.save();
+        return res.json({ message: "Collaborator role updated successfully" });
+      }
+      return res.json({ message: "Collaborator already exists" });
+    } else {
+      whiteboard.collaborators.push({ userId, role });
+      await whiteboard.save();
+      return res.json({ message: "Collaborator added successfully" });
+    }
 
   } catch (error) {
     res.status(500).json({ message: "Error adding collaborator", error: error });

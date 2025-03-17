@@ -67,7 +67,7 @@ const ViewBoard = () => {
             </ThumbnailContainer>
             <DetailWrapper>
                 <BoardDetails boardData={data.current} />
-                <BoardOperations boardData={data.current} />
+                {/* <BoardOperations boardData={data.current} /> */}
             </DetailWrapper>
         </ViewBoardWrapper>
     );

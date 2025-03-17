@@ -10,7 +10,7 @@ const ProfileContainer = styled.div`
   padding: 10px;
   border-bottom: 1px solid #ddd;
   &:hover {
-    background: #f9f9f9;
+    background: ${({theme}) => theme.dropdownHover}
   }
 `;
 

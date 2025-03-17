@@ -35,7 +35,7 @@ export const darkTheme = {
     text: "#ffffff",
     cardBg: "#2a2a2a",
     cardText: "#f1f1f1",
-    buttonBg: "#ff9800",
+    buttonBg: "#F36F41",
     buttonText: "#000000",
     navbarBg: "#100E14",
     logo: "#ffffff",

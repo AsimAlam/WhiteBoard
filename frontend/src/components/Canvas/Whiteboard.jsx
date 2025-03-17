@@ -6,6 +6,8 @@ import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { useUser } from "../../ContextProvider/UserProvider";
 import { _addCollaborator, _getDashboard, _getWhiteboard, _saveCanvasToDB } from '../../api/api';
 import { toast } from "react-hot-toast";
+import { IoIosRedo, IoIosSave, IoIosUndo } from "react-icons/io";
+import { HiLink } from "react-icons/hi";
 
 const CanvasWrapper = styled.div`
   position: relative;
@@ -27,28 +29,38 @@ const SaveButton = styled.button`
   top: 10px;
   right: 10px;
   z-index: 10;
-  padding: 8px 12px;
-  font-size: 14px;
+  padding: 5px 10px;
+  font-size: 1.2rem;
   cursor: pointer;
 `;
 
 const UndoButton = styled.button`
   position: absolute;
-  top: 10px;
-  right: 120px;
+  top: 90px;
+  right: 10px;
   z-index: 10;
-  padding: 8px 12px;
-  font-size: 14px;
+  padding: 5px 10px;
+  font-size: 1.2rem;
   cursor: pointer;
 `;
 
 const RedoButton = styled.button`
   position: absolute;
-  top: 10px;
-  right: 230px;
+  top: 130px;
+  right: 10px;
   z-index: 10;
-  padding: 8px 12px;
-  font-size: 14px;
+  padding: 5px 10px;
+  font-size: 1.2rem;
+  cursor: pointer;
+`;
+
+const CopyButton = styled.button`
+  position: absolute;
+  top: 50px;
+  right: 10px;
+  z-index: 10;
+  padding: 5px 10px;
+  font-size: 1.2rem;
   cursor: pointer;
 `;
 
@@ -102,6 +114,13 @@ const Whiteboard = ({ tool, penColor, lineWidth = 2, Userrole, setRole, setBoard
         canvas.requestRenderAll();
       });
     }
+  };
+
+  const handleCopyUrl = () => {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url)
+      .then(() => toast.success("URL copied to clipboard!"))
+      .catch(err => console.error("Failed to copy: ", err));
   };
 
   // Fetch user details if missing.
@@ -439,9 +458,10 @@ const Whiteboard = ({ tool, penColor, lineWidth = 2, Userrole, setRole, setBoard
 
 
     <CanvasWrapper>
-      <RedoButton onClick={redo}>Redo</RedoButton>
-      <UndoButton onClick={undo}>Undo</UndoButton>
-      <SaveButton onClick={saveCanvasState}>Save Canvas</SaveButton>
+      <CopyButton onClick={handleCopyUrl} title='Copy Link'><HiLink /></CopyButton>
+      <RedoButton onClick={redo} title='Redo'><IoIosRedo /></RedoButton>
+      <UndoButton onClick={undo} title='Undo'><IoIosUndo /></UndoButton>
+      <SaveButton onClick={saveCanvasState} title='Save Canvas'><IoIosSave /></SaveButton>
       <StyledCanvas ref={canvasRef} />
     </CanvasWrapper>
   );

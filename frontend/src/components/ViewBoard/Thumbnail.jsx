@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { jsPDF } from 'jspdf';
-import styled, { ThemeContext, ThemeProvider, useTheme } from 'styled-components';
+import styled, { useTheme } from 'styled-components';
 import toast from 'react-hot-toast';
 
 pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
@@ -14,6 +14,7 @@ const ThumbnailWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  color: ${({ theme }) => theme.text}
 `;
 
 const Thumbnail = ({ data }) => {
@@ -58,7 +59,7 @@ const Thumbnail = ({ data }) => {
     if (error) {
         return (
             <ThumbnailWrapper>
-                <p>Error: {error}</p>
+                <p>No PDF! Try Saving Canvas First</p>
             </ThumbnailWrapper>
         );
     }
