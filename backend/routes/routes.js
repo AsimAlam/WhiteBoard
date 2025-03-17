@@ -17,7 +17,7 @@ module.exports = (app) => {
     );
 
     app.use(cors({
-        origin: 'http://localhost:3000',
+        origin: 'https://whiteboard-frontend-zb1b.onrender.com',
         credentials: true,
     }));
 
