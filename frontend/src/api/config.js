@@ -1,7 +1,7 @@
 const { pathname } = window.location;
 
 const currentURL = window.location.href;
-const redirectParam = (currentURL.includes("/login") || pathname === '/') ? "http://localhost:3000/dashboard" : currentURL;
+const redirectParam = (currentURL.includes("/login") || pathname === '/') ? "http://https://whiteboard-frontend-zb1b.onrender.com/dashboard" : currentURL;
 console.log("currentURL", encodeURIComponent(redirectParam), redirectParam);
 
 const config = {

@@ -45,9 +45,7 @@ const ToggleThemeButton = styled.button`
 `;
 
 const CanvasContainer = () => {
-  // Manage the current tool: 'pen', 'eraser', 'shape', or 'text'
   const [tool, setTool] = useState('pen');
-  // Manage the pen color; default is black.
   const [penColor, setPenColor] = useState('#000000');
   const [role, setRole] = useState('read');
   const [boardId, setBoardId] = useState('');
