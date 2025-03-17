@@ -8,18 +8,18 @@ const Whiteboard = require("../controllers/whilteboard");
 
 module.exports = (app) => {
     // Express session middleware
-    app.use(
-        session({
-            secret: "your_session_secret", // change this to a strong secret
-            resave: false,
-            saveUninitialized: false,
-        })
-    );
+    // app.use(
+    //     session({
+    //         secret: "your_session_secret", // change this to a strong secret
+    //         resave: false,
+    //         saveUninitialized: false,
+    //     })
+    // );
 
-    app.use(cors({
-        origin: 'https://whiteboard-frontend-zb1b.onrender.com',
-        credentials: true,
-    }));
+    // app.use(cors({
+    //     origin: 'https://whiteboard-frontend-zb1b.onrender.com',
+    //     credentials: true,
+    // }));
 
     app.use(passport.initialize());
     app.use(passport.session());
