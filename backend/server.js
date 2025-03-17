@@ -5,6 +5,7 @@ const cors = require("cors");
 const http = require("http");
 const { Server } = require("socket.io");
 const routes = require("./routes/routes");
+const session = require("express-session");
 
 const app = express();
 const server = http.createServer(app);
@@ -12,6 +13,22 @@ const io = new Server(server, { cors: { origin: "*" } });
 
 app.use(express.json());
 app.use(cors());
+
+app.use(session({
+    secret: "your-secret-key",  // Use a strong secret
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: true,       // Must be true for HTTPS
+        httpOnly: true,     // Prevent client-side access
+        sameSite: "None",   // Required for cross-origin cookies
+    },
+}));
+
+app.use(cors({
+    origin: 'https://whiteboard-frontend-zb1b.onrender.com',
+    credentials: true,
+}));
 
 mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
