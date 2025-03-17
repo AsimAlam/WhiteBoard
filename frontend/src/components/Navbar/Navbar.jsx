@@ -191,7 +191,7 @@ const Navbar = () => {
               <DropdownItem onClick={() => navigate("/dashboard")}>
                 Dashboard
               </DropdownItem>
-              <DropdownItem onClick={() => navigate("/settings")}>
+              <DropdownItem>
                 Settings
               </DropdownItem>
               <DropdownItem

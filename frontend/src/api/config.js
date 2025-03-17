@@ -6,7 +6,7 @@ console.log("currentURL", encodeURIComponent(redirectParam), redirectParam);
 
 const config = {
 
-    BACKEND_URL: "http://localhost:5000",
+    BACKEND_URL: "https://whiteboard-backend-sfp3.onrender.com",
     GOOGLE_AUTH_URL: `/auth/google?redirect=${encodeURIComponent(redirectParam)}`,
     DASHBOARD_URL: "/auth/dashboard",
     LOGOUT: "/auth/logout",

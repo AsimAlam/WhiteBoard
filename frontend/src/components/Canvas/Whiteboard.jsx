@@ -215,7 +215,7 @@ const Whiteboard = ({ tool, penColor, lineWidth = 2, Userrole, setRole, setBoard
 
   // Set up Socket.io for collaboration.
   useEffect(() => {
-    socketRef.current = io("http://localhost:5000");
+    socketRef.current = io("https://whiteboard-backend-sfp3.onrender.com");
     socketRef.current.emit("join-board", id);
 
     socketRef.current.on("permission-change", (data) => {
