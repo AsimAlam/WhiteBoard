@@ -29,7 +29,7 @@ app.use(session({
         secure: true,         // Requires HTTPS; with trust proxy, Express sees the connection as secure
         httpOnly: true,
         sameSite: "None",     // Allows cross-site cookies
-        domain: ".onrender.com" // Optional: ensures the cookie is available on all subdomains
+        // domain: ".onrender.com" // Optional: ensures the cookie is available on all subdomains
     },
 }));
 
