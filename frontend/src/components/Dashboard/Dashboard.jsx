@@ -147,9 +147,9 @@ const Dashboard = () => {
     try {
       const response = await _getAllWhiteboard(user?._id);
       if (response.status === 401 || response.status === 403) {
-        // toast.error("Please Login First");
-        // localStorage.removeItem('user');
-        // navigate("/login");
+        toast.error("Please Login First");
+        localStorage.removeItem('user');
+        navigate("/login");
         return;
       }
       console.log(response);
