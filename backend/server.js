@@ -8,38 +8,42 @@ const session = require("express-session");
 const routes = require("./routes/routes");
 
 const app = express();
-const server = http.createServer(app);
-const io = new Server(server, { cors: { origin: "*" } });
+
+// Trust the first proxy (Render uses a reverse proxy)
+app.set("trust proxy", 1);
 
 app.use(express.json());
 
-// ✅ Properly configure CORS (before session middleware)
+// Configure CORS (must be before session middleware)
 app.use(cors({
     origin: "https://whiteboard-frontend-zb1b.onrender.com", // Your frontend URL
     credentials: true,
 }));
 
-// ✅ Fix session middleware (ensure correct order)
+// Configure session middleware
 app.use(session({
     secret: "your-secret-key",  // Use a strong secret
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: true,       // Required for HTTPS (ensure you're using HTTPS)
-        httpOnly: true,     // Prevents client-side access
-        SameSite: "None",   // Allows cross-site cookies
-        domain: ".onrender.com" // Set the cookie for all subdomains
+        secure: true,         // Requires HTTPS; with trust proxy, Express sees the connection as secure
+        httpOnly: true,
+        sameSite: "None",     // Allows cross-site cookies
+        domain: ".onrender.com" // Optional: ensures the cookie is available on all subdomains
     },
 }));
 
-// ✅ Connect MongoDB
+// Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }).then(() => console.log("✅ MongoDB Connected"))
-    .catch(err => console.error(err));
+  .catch(err => console.error(err));
 
-// ✅ Socket.io configuration
+// Socket.io configuration
+const server = http.createServer(app);
+const io = new Server(server, { cors: { origin: "*" } });
+
 io.on("connection", (socket) => {
     console.log("A user connected:", socket.id);
 
@@ -62,10 +66,9 @@ io.on("connection", (socket) => {
     });
 });
 
-// ✅ Load routes
 routes(app);
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
-    console.log(`🚀 Server running at http://localhost:${PORT}`);
+    console.log(`🚀 Server running on port ${PORT}`);
 });
