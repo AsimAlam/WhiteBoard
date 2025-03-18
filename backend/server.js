@@ -25,9 +25,10 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        httpOnly: true,
-        sameSite: "None",   // Allows cross-origin requests
-        secure: process.env.NODE_ENV === "production",  // Set secure only in production
+        secure: true,       // Required for HTTPS (ensure you're using HTTPS)
+        httpOnly: true,     // Prevents client-side access
+        sameSite: "None",   // Allows cross-site cookies
+        domain: ".onrender.com" // Set the cookie for all subdomains
     },
 }));
 
