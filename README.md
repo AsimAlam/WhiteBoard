@@ -2,6 +2,13 @@
 
 A full-stack real-time collaborative whiteboard application that enables multiple users to draw, add text, create shapes, and collaborate live. The application supports persistent canvas state storage, role-based access, and secure authentication via Google OAuth.
 
+[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen.svg)](https://whiteboard-frontend-zb1b.onrender.com)
+
+![whiteboard-s3](https://github.com/user-attachments/assets/8faf5373-3248-43f1-98c1-b8382133f36b)
+
+![whiteboard-s2](https://github.com/user-attachments/assets/ad916848-b8ef-4953-9dce-b77211de02b2)
+
+
 ## Features
 
 - **Real-Time Collaboration:**  
