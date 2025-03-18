@@ -105,7 +105,7 @@ A full-stack real-time collaborative whiteboard application that enables multipl
     -  Use the Undo/Redo buttons to revert or reapply changes.
     -  Click Save to persist the current canvas state to the database.
 
-## Usage
+## API Endpoints
 
 ### Authentication
 - GET ```/auth/google``` – Initiate Google OAuth (supports a ```redirect``` query parameter).
