@@ -5,7 +5,7 @@ const router = express.Router();
 // Google OAuth Routes
 router.get("/google", (req, res, next) => {
     const redirectUrl = req.query.redirect || "/dashboard";
-    console.log("inside google api", redirectUrl);
+    // console.log("inside google api", redirectUrl);
     passport.authenticate("google", {
         scope: ["profile", "email"],
         state: redirectUrl
@@ -19,7 +19,7 @@ router.get(
         // const redirectTo = req.query.state || "/dashboard";
 
         const redirectTo = req.query.state ? decodeURIComponent(req.query.state) : "/dashboard";
-        console.log("inside callback", redirectTo);
+        // console.log("inside callback", redirectTo);
         res.redirect(redirectTo);
 
         // res.redirect(`${redirectTo}`);
@@ -44,7 +44,7 @@ router.get("/login", (req, res) => {
 
 // Logout Route (Fixed)
 router.get("/logout", (req, res, next) => {
-    console.log("inside logount");
+    // console.log("inside logount");
     req.logout((err) => {
         if (err) return next(err);
         res.status(200).json({ message: "Logged out successfully" });

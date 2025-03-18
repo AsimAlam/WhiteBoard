@@ -118,7 +118,7 @@ const Canvas = ({ setTool, currentTool, setPenColor, role, boardId, collaborator
   const [currRole, setCurrRole] = useState(role);
 
   useEffect(() => {
-    console.log("role props", role);
+    // console.log("role props", role);
     setCurrRole(role);
     setTool('select');
   }, [role]);

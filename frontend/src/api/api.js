@@ -21,7 +21,7 @@ export const _createNewBoard = async (userId, boardName) => {
             ownerId: userId,
         }),
     });
-    console.log("response", response);
+    // console.log("response", response);
 
     return response;
 }
@@ -59,10 +59,10 @@ export const _saveCanvasToDB = async (whiteboardId, canvasJSON, thumbnail, userI
         );
 
         const result = await response.json();
-        console.log("Save response:", result);
+        // console.log("Save response:", result);
         return result;
     } catch (error) {
-        console.error("Error saving canvas:", error);
+        // console.error("Error saving canvas:", error);
         return { error: "Error saving canvas" };
     }
 };
@@ -78,7 +78,7 @@ export const _getWhiteboard = async (whiteboardId, userId) => {
             },
         });
 
-        console.log("getting response", response);
+        // console.log("getting response", response);
 
         return response;
     } catch (error) {
@@ -87,7 +87,7 @@ export const _getWhiteboard = async (whiteboardId, userId) => {
 }
 
 export const _getAllWhiteboard = async (userId) => {
-    console.log("getallwhiteboard", userId);
+    // console.log("getallwhiteboard", userId);
     try {
         const response = await fetch(`${config.BACKEND_URL}${config.GET_ALL_WHITEBOARD}?userId=${userId}`, {
             method: 'GET',
@@ -114,11 +114,11 @@ export const _deleteWhiteboard = async (whiteboardId, userId) => {
                 Authorization: userId
             },
         });
-        console.log("delete response", response);
+        // console.log("delete response", response);
         return response;
 
     } catch (error) {
-        console.log("error", error);
+        // console.log("error", error);
         return error;
     }
 }
@@ -134,7 +134,7 @@ export const _renameBoard = async (whiteboardId, userId, name) => {
             body: JSON.stringify({ name: name })
         });
 
-        console.log("rename api response", response);
+        // console.log("rename api response", response);
         return response;
 
     } catch (error) {
@@ -154,7 +154,7 @@ export const _addCollaborator = async (whiteboardId, sessionToken, ownerId, role
             body: JSON.stringify({ userId: userId, role: role })
         });
 
-        console.log("response from add collaboarator", response);
+        // console.log("response from add collaboarator", response);
 
         return response;
 
@@ -164,7 +164,7 @@ export const _addCollaborator = async (whiteboardId, sessionToken, ownerId, role
 }
 
 export const _changePermission = async (whiteboardId, role, userId) => {
-    console.log("in api", whiteboardId, role, userId);
+    // console.log("in api", whiteboardId, role, userId);
     try {
 
         const response = await fetch(`${config.BACKEND_URL}${config.CHANGE_PERMISSION(whiteboardId)}`, {
@@ -175,7 +175,7 @@ export const _changePermission = async (whiteboardId, role, userId) => {
             body: JSON.stringify({ userId: userId, role: role })
         });
 
-        console.log("response from add collaboarator", response);
+        // console.log("response from add collaboarator", response);
 
         return response;
 
@@ -227,7 +227,7 @@ export const _updateNotes = async (whiteboardId, data, userId) => {
             body: JSON.stringify({ content: data })
         });
 
-        console.log("update res", response);
+        // console.log("update res", response);
 
         return response;
 

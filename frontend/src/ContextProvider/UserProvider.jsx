@@ -9,7 +9,7 @@ export function UserProvider({ children }) {
     });
 
     useEffect(() => {
-        console.log("user", user);
+        // console.log("user", user);
         if (user && Object.keys(user).length !== 0) {
             localStorage.setItem('user', JSON.stringify(user));
         }

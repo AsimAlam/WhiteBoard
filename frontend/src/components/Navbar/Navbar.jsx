@@ -154,15 +154,15 @@ const Navbar = () => {
   }, []);
 
   const handleLogout = async () => {
-    console.log("inside logout");
+    // console.log("inside logout");
     setUser({});
     localStorage.removeItem('user');
-    console.log("user logout", user);
+    // console.log("user logout", user);
     const response = await _logout();
     if (response.status === 200) {
       navigate("/");
     }
-    console.log("logout", response);
+    // console.log("logout", response);
   }
 
   return (

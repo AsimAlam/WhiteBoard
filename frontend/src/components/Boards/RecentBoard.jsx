@@ -188,7 +188,7 @@ const RecentBoard = ({ data, Refresh }) => {
   const handleDelete = async () => {
     try {
       const response = await _deleteWhiteboard(data._id, user._id);
-      console.log("delete response", response);
+      // console.log("delete response", response);
       if (response.status === 401 || response.status === 403) {
         toast.error("Please Login First");
         localStorage.removeItem('user');

@@ -21,7 +21,7 @@ const BoardOperationsWrapper = styled.div`
 
 const BoardOperations = ({ boardData }) => {
 
-    console.log("boarData", boardData);
+    // console.log("boarData", boardData);
 
     const navigate = useNavigate();
 
@@ -34,7 +34,7 @@ const BoardOperations = ({ boardData }) => {
         const page = boardData.pages && boardData.pages[0];
         if (!page || !page.thumbnail) {
             toast.error("No thumbnail available");
-            console.error("No thumbnail available");
+            // console.error("No thumbnail available");
             return;
         }
         const imageData = page.thumbnail;
@@ -56,7 +56,7 @@ const BoardOperations = ({ boardData }) => {
         };
         img.onerror = () => {
             toast.error("Failed to Download Pdf");
-            console.error("Failed to load image");
+            // console.error("Failed to load image");
         };
     };
 
@@ -64,7 +64,7 @@ const BoardOperations = ({ boardData }) => {
         const page = boardData.pages && boardData.pages[0];
         if (!page || !page.thumbnail) {
             toast.error("No thumbnail available");
-            console.error("No thumbnail available");
+            // console.error("No thumbnail available");
             return;
         }
         const link = document.createElement('a');

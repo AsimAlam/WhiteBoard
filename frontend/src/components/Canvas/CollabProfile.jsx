@@ -57,14 +57,14 @@ const CollabProfile = ({ collab, handleChangePermission }) => {
         if (response.status === 200) {
             setPermission(newPermission);
         }
-        console.log("permission response", response);
+        // console.log("permission response", response);
     };
 
     const getUserDetail = async () => {
         try {
             const response = await _getUser(collab.userId);
             const result = await response.json();
-            console.log("user", result);
+            // console.log("user", result);
             if (response.status === 200) {
                 setUser(result);
             }else{
@@ -78,15 +78,6 @@ const CollabProfile = ({ collab, handleChangePermission }) => {
     useEffect(() => {
         getUserDetail();
     }, [collab]);
-
-    useEffect(() => {
-        if (user?.profilePic) {
-            // Since the URL you provided is HTTPS, we can use it directly.
-            // imgSrc.current = user.profilePic;
-            console.log("current", imgSrc.current);
-            // setImgSrc(user.profilePic);
-        }
-    }, [user]);
 
     return (
         <ProfileContainer>

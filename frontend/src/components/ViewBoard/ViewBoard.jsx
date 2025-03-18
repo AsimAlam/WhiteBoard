@@ -40,7 +40,7 @@ const ViewBoard = () => {
     const boardData = Location?.state?.boardData;
 
     useEffect(() => {
-        console.log("inside", boardData);
+        // console.log("inside", boardData);
         if (!boardData) {
             toast.error("No board data found. Redirecting to dashboard.");
             navigate("/dashboard");
@@ -54,10 +54,6 @@ const ViewBoard = () => {
     }, []);
 
     const data = useRef(boardData);
-
-    useEffect(() => {
-        console.log(boardData, data.current);
-    }, [boardData]);
 
 
     return (

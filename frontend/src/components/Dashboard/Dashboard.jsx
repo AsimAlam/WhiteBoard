@@ -121,13 +121,13 @@ const Dashboard = () => {
 
   const fetchDashboardData = async () => {
     const response = await _getDashboard();
-    console.log("response", response);
+    // console.log("response", response);
     if (response.ok) {
       const data = await response?.json();
       // console.log("data", data?.data);
       // console.log("uri", encodeURIComponent(window.location.href), window.location.href);
       if (data?.data) {
-        console.log("data parse", JSON.stringify(data.data));
+        // console.log("data parse", JSON.stringify(data.data));
         localStorage.setItem('user', JSON.stringify(data.data));
         setUser(data?.data);
       }
@@ -143,7 +143,7 @@ const Dashboard = () => {
   };
 
   const getAllWhiteboard = async () => {
-    console.log("user.id", user?._id);
+    // console.log("user.id", user?._id);
     try {
       const response = await _getAllWhiteboard(user?._id);
       if (response.status === 401 || response.status === 403) {
@@ -152,7 +152,7 @@ const Dashboard = () => {
         navigate("/login");
         return;
       }
-      console.log(response);
+      // console.log(response);
       if (response?.message !== "Server error") setAllWhiteboard(response);
     } catch (error) {
       console.log(error);

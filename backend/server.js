@@ -45,11 +45,11 @@ const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 
 io.on("connection", (socket) => {
-    console.log("A user connected:", socket.id);
+    // console.log("A user connected:", socket.id);
 
     socket.on("join-board", (boardId) => {
         socket.join(boardId);
-        console.log(`Socket ${socket.id} joined board ${boardId}`);
+        // console.log(`Socket ${socket.id} joined board ${boardId}`);
     });
 
     socket.on("canvas-update", (data) => {

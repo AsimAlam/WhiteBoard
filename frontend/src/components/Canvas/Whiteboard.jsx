@@ -128,14 +128,14 @@ const Whiteboard = ({ tool, penColor, lineWidth = 2, Userrole, setRole, setBoard
     if (!user || Object.keys(user).length === 0) {
       (async () => {
         const response = await _getDashboard();
-        console.log("getdashboard", response);
+        // console.log("getdashboard", response);
         const data = await response?.json();
-        console.log("whiteboard", data);
+        // console.log("whiteboard", data);
         if (data.message === 'Unauthorized') {
           toast.error("Please Login First");
           navigate(`/login?redirect=${encodeURIComponent(window.location.href)}`);
         } else {
-          console.log("Data", data?.data);
+          // console.log("Data", data?.data);
           setUser(data?.data);
         }
       })();
@@ -148,7 +148,7 @@ const Whiteboard = ({ tool, penColor, lineWidth = 2, Userrole, setRole, setBoard
     const fetchWhiteboard = async () => {
       try {
         const response = await _getWhiteboard(id, user._id)
-        console.log("getWhiteboard", response, id, user._id);
+        // console.log("getWhiteboard", response, id, user._id);
         if (response.status === 401 || response.status === 403 || response.status === 400) {
           toast.error("Please Login First");
           localStorage.removeItem('user');
@@ -157,21 +157,21 @@ const Whiteboard = ({ tool, penColor, lineWidth = 2, Userrole, setRole, setBoard
         }
         const data = await response.json();
         if (data.pages && data.pages.length > 0) {
-          console.log("canvas data", data.pages[0].canvasData);
+          // console.log("canvas data", data.pages[0].canvasData);
           setCanvasData(data.pages[0].canvasData);
         }
 
         if (data.ownerId !== user._id) {
           const collaborators = data.collaborators.find(collab => collab.userId === user._id);
-          console.log("collaborator", collaborators, data, user);
+          // console.log("collaborator", collaborators, data, user);
           if (!collaborators) {
             await _addCollaborator(data._id, data.sessionToken, data.ownerId, 'read', user._id);
           } else {
-            console.log("role", collaborators.role);
+            // console.log("role", collaborators.role);
             setRole(collaborators.role);
           }
         } else {
-          console.log("inside owner", data, user);
+          // console.log("inside owner", data, user);
           setBoardId(data._id);
           setCollaborators(data.collaborators);
           setRole('write');
@@ -179,7 +179,7 @@ const Whiteboard = ({ tool, penColor, lineWidth = 2, Userrole, setRole, setBoard
 
       } catch (error) {
         toast.error("Unable to Fetch Whiteboard. Please try again.")
-        console.error("Error fetching whiteboard:", error);
+        // console.error("Error fetching whiteboard:", error);
       }
     };
     fetchWhiteboard();
@@ -434,10 +434,10 @@ const Whiteboard = ({ tool, penColor, lineWidth = 2, Userrole, setRole, setBoard
     const canvas = fabricCanvasRef.current;
     if (!canvas) return;
     const json = canvas.toJSON();
-    console.log('Canvas state:', json);
+    // console.log('Canvas state:', json);
 
     const thumbnail = canvas.toDataURL({ format: 'png', multiplier: 0.25 });
-    console.log('Thumbnail generated:', thumbnail);
+    // console.log('Thumbnail generated:', thumbnail);
 
     const response = await _saveCanvasToDB(id, json, thumbnail, user._id, sessionToken);
 
@@ -448,7 +448,7 @@ const Whiteboard = ({ tool, penColor, lineWidth = 2, Userrole, setRole, setBoard
       return;
     }
 
-    console.log("save response", response);
+    // console.log("save response", response);
 
     return json;
   };

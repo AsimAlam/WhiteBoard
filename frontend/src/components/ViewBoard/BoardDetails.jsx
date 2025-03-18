@@ -165,12 +165,12 @@ const BoardDetails = ({ boardData }) => {
             toast.error("Failed to update notes. Please try again.");
         }
         const result = await response.json();
-        console.log("handle notes update", result);
+        // console.log("handle notes update", result);
         setIsEditing(false);
     };
 
     useEffect(() => {
-        console.log("ids", boardData?.ownerId, user?._id)
+        // console.log("ids", boardData?.ownerId, user?._id)
         handleGetNotes();
     }, []);
 

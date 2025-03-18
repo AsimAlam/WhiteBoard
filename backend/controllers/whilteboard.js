@@ -1,8 +1,6 @@
 const express = require("express");
 const Whiteboard = require("../models/Whiteboard");
 const NoteSchema = require("../models/NoteSchema");
-// const validateSessionToken = require("../middleware/validateSessionToken");
-// const checkRole = require("../middleware/checkRole");
 const { v4: uuidv4 } = require("uuid");
 const authMiddleware = require("../middleware/authCheck");
 const User = require("../models/User");
@@ -27,20 +25,20 @@ router.get("/get-all-whiteboard", async (req, res) => {
 
   const { userId } = req.query;
 
-  console.log("userid", userId);
+  // console.log("userid", userId);
 
   try {
-    console.log("dfss");
+    // console.log("dfss");
     const allWhiteboard = await Whiteboard.find({
       $or: [
         { ownerId: userId },
         { "collaborators.userId": userId }
       ]
     });
-    console.log(allWhiteboard);
+    // console.log(allWhiteboard);
     res.json(allWhiteboard);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     res.status(500).json({ message: "Server error", error: error });
   }
 });
@@ -51,7 +49,7 @@ router.put("/:id/save-drawing", authMiddleware, async (req, res) => {
   const { token } = req.query;
   const { canvas, thumbnail } = req.body;
 
-  console.log(id, token, canvas);
+  // console.log(id, token, canvas);
 
   try {
 
@@ -86,7 +84,7 @@ router.put("/:id/add-collaborator", authMiddleware, async (req, res) => {
       return res.status(403).json({ message: "Invalid session token" });
     }
 
-    console.log("collab whiteboard", whiteboard);
+    // console.log("collab whiteboard", whiteboard);
 
     const existing = whiteboard.collaborators.find(collab =>
       collab.userId.toString() === userId
@@ -123,7 +121,7 @@ router.put("/:id/change-permission", async (req, res) => {
     //   return res.status(403).json({ message: "Invalid session token" });
     // }
 
-    console.log("collab whiteboard", whiteboard);
+    // console.log("collab whiteboard", whiteboard);
 
     const collaborator = whiteboard.collaborators.find(
       (collab) => collab.userId.toString() === userId
@@ -231,7 +229,7 @@ router.get("/:id/get-notes", async (req, res) => {
 
   try {
     const notes = await NoteSchema.find({ whiteboardId: id });
-    console.log("notes", notes);
+    // console.log("notes", notes);
     res.status(200).json(notes);
   } catch (error) {
     res.status(500).json({ message: "Error getting Notes", error: error });

@@ -35,7 +35,7 @@ const Thumbnail = ({ data }) => {
                     doc.addImage(imageData, 'PNG', 0, 0, 500, 200);
 
                     const generatedPdfDataUrl = doc.output('datauristring');
-                    console.log("Generated PDF data URL:", generatedPdfDataUrl);
+                    // console.log("Generated PDF data URL:", generatedPdfDataUrl);
 
                     // For debugging: open the generated PDF in a new tab.
                     // window.open(generatedPdfDataUrl);
@@ -43,7 +43,7 @@ const Thumbnail = ({ data }) => {
                     setPdfDataUrl(generatedPdfDataUrl);
                 } catch (err) {
                     toast.error("Unable to Load PDF");
-                    console.error("Error generating PDF:", err);
+                    // console.error("Error generating PDF:", err);
                     setError("Error generating PDF: " + err.toString());
                 }
             } else {

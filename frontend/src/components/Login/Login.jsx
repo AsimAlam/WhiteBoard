@@ -105,10 +105,10 @@ const Login = () => {
 
     useEffect(() => {
         if (user && Object.keys(user).length !== 0) {
-            console.log("inside login useEffect");
+            // console.log("inside login useEffect");
             const query = new URLSearchParams(location.search);
             const redirectUrl = query.get("redirect") || "/dashboard";
-            console.log("login redirect", redirectUrl);
+            // console.log("login redirect", redirectUrl);
             navigate(redirectUrl);
         }
     }, [user, location, navigate]);

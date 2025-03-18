@@ -76,7 +76,7 @@ const NewBoard = () => {
         try {
             const response = await _createNewBoard(user._id, "New Board");
             const data = await response.json();
-            console.log("data", data);
+            // console.log("data", data);
             const { _id, sessionToken } = data;
             // Construct the unique URL for the new whiteboard
             const boardUrl = `/whiteboard/${_id}?token=${sessionToken}`;
@@ -85,7 +85,7 @@ const NewBoard = () => {
             navigate(boardUrl);
         } catch (error) {
             toast.error("Unable to create New Board.")
-            console.error("Error creating new board:", error);
+            // console.error("Error creating new board:", error);
         }
     }
 
