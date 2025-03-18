@@ -1,8 +1,8 @@
 const express = require("express");
 const Whiteboard = require("../models/Whiteboard");
 const NoteSchema = require("../models/NoteSchema");
-const validateSessionToken = require("../middleware/validateSessionToken");
-const checkRole = require("../middleware/checkRole");
+// const validateSessionToken = require("../middleware/validateSessionToken");
+// const checkRole = require("../middleware/checkRole");
 const { v4: uuidv4 } = require("uuid");
 const authMiddleware = require("../middleware/authCheck");
 const User = require("../models/User");

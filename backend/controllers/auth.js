@@ -16,7 +16,6 @@ router.get(
     "/google/callback",
     passport.authenticate("google", { failureRedirect: "https://whiteboard-frontend-zb1b.onrender.com/login" }),
     (req, res) => {
-        // Retrieve the redirect URL from the state parameter.
         // const redirectTo = req.query.state || "/dashboard";
 
         const redirectTo = req.query.state ? decodeURIComponent(req.query.state) : "/dashboard";
