@@ -27,7 +27,7 @@ app.use(session({
     cookie: {
         secure: true,       // Required for HTTPS (ensure you're using HTTPS)
         httpOnly: true,     // Prevents client-side access
-        sameSite: "None",   // Allows cross-site cookies
+        SameSite: "None",   // Allows cross-site cookies
         domain: ".onrender.com" // Set the cookie for all subdomains
     },
 }));
