@@ -8,6 +8,9 @@ A full-stack real-time collaborative whiteboard application that enables multipl
 
 ![whiteboard-s2](https://github.com/user-attachments/assets/ad916848-b8ef-4953-9dce-b77211de02b2)
 
+## If You Like This Project...
+
+If you find this project useful, please give it a star on GitHub! Your support helps improve the project and encourages further development.
 
 ## Features
 
