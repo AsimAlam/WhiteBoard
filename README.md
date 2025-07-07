@@ -1,6 +1,14 @@
 # Collaborative Whiteboard
 
-A full-stack real-time collaborative whiteboard application that enables multiple users to draw, add text, create shapes, and collaborate live. The application supports persistent canvas state storage, role-based access, and secure authentication via Google OAuth.
+Collaborative Whiteboard is a full-stack, real-time drawing canvas that empowers distributed teams to brainstorm, sketch, and annotate together. Built with a React frontend and Node.js/Socket.io backend, it supports freehand drawing, text labels, geometric shapes, and image uploads—everything updates instantly across all connected clients.
+
+- Persistent Canvas State: Every stroke and object is saved in a database so boards can be revisited or resumed at any time.
+- Role-Based Access & Permissions: Board owners can invite collaborators, then selectively grant or revoke drawing, commenting, or viewing rights.
+- Secure Authentication: Users sign in seamlessly with Google OAuth, ensuring a trusted and familiar login flow.
+- Downloadable Exports: Anyone with access can export the current board view as a high-resolution PNG or a paginated PDF.
+- Owner Notes & Annotations: Board owners get a dedicated sidebar for jotting meeting minutes, action items, or reminders tied to each board.
+
+Whether you’re running a remote design sprint, teaching online classes, or simply whiteboarding ideas with friends, this app makes collaboration fluid, secure, and endlessly flexible.
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen.svg)](https://whiteboard-frontend-zb1b.onrender.com)
 
